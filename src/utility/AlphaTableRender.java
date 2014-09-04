@@ -21,17 +21,13 @@ public class AlphaTableRender implements TableCellRenderer {
         JLabel text = new JLabel();
         if(text!=null) {
         	text.setText(value.toString());
-        	System.out.println(text.getFont());
-        	System.out.println(text.getFont());
         	text.setFont(new Font("Dialog", Font.PLAIN, 12));
-        	System.out.println(text.getFont());
         }
         if(row==(table.getRowCount()-1)) {
         	text.setFont(new Font("Dialog", Font.BOLD, 12));
         }
         if((column==4) || (column==6) || (column==8)) {
         	text.setHorizontalAlignment(SwingConstants.RIGHT);
-        	System.out.println(value);
         }
         if((column==0) || (column==1)) {
         	text.setHorizontalAlignment(SwingConstants.CENTER);

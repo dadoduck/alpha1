@@ -44,7 +44,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 
 	Connection connection = null;
 	private JTable table;
-	String[] columnNames = {"Numero", "Data", "Indirizzo", "Tipologia", "Importo", "Acquisitore", "Provv A", "Venditore", "Provv V"};
+	String[] columnNames = {"NumeroFattura", "DataFattura", "IndirizzoImmobile", "Tipologia", "Importo", "Acquisitore", "ProvvigioniAcquisitore", "Venditore", "ProvvigioniVenditore"};
 	private JTextField textFieldNumeroFattura;
 	private ObservingTextField textFieldDataFattura;
 	private JTextField textFieldIndirizzoImmobile;
@@ -273,103 +273,12 @@ public class VisualizzaFatturaPanel extends JPanel {
 
 	}
 	
-	private void refreshTable() {
-		try {
-			String query = "select * from Fattura";
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			table.setModel(DbUtils.resultSetToTableModel(rs));
-			
-//			set cells format
-			TableColumnModel tcm = table.getColumnModel();  
-			NumberFormat format = new DecimalFormat("#,###.00"); 
-			format.setMaximumFractionDigits(2);  
-			tcm.getColumn(4).setCellRenderer( new NumberRenderer( format ) ); 
-			tcm.getColumn(6).setCellRenderer( new NumberRenderer( format ) ); 
-			tcm.getColumn(8).setCellRenderer( new NumberRenderer( format ) );
-			
-			table.getColumnModel().getColumn(1).setCellRenderer(new DateRenderer());
-	
-//			set TOTAL last row
-			DefaultTableModel model = (DefaultTableModel)table.getModel();
-			model.addRow(new Object[] {"TOTALE", null, "", "", getSumColumn(4), "", getSumColumn(6), "", getSumColumn(8)});
-			
-			//table.setDefaultRenderer(Object.class, new MyRenderer());
-
-			
-			
-			pst.close();
-			rs.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	private void orderTable(String nameColumn, String typeOrder) {
-		try {
-			String query = "select * from Fattura ORDER BY " + nameColumn + " " + typeOrder;
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			table.setModel(DbUtils.resultSetToTableModel(rs));
-			
-//			set cells format
-			TableColumnModel tcm = table.getColumnModel();  
-			NumberFormat format = new DecimalFormat("#,###.00"); 
-			format.setMaximumFractionDigits(2);  
-			tcm.getColumn(4).setCellRenderer( new NumberRenderer( format ) ); 
-			tcm.getColumn(6).setCellRenderer( new NumberRenderer( format ) ); 
-			tcm.getColumn(8).setCellRenderer( new NumberRenderer( format ) ); 
-			
-			table.getColumnModel().getColumn(1).setCellRenderer(new DateRenderer());
-			
-//			set TOTAL last row
-			DefaultTableModel model = (DefaultTableModel)table.getModel();
-			model.addRow(new Object[] {"TOTALE", null, "", "", getSumColumn(4), "", getSumColumn(6), "", getSumColumn(8)});
-			
-			pst.close();
-			rs.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void fillComboBox(JComboBox<String> comboBox, String parameterColumn, String nameTable) {
-		comboBox.addItem("..:: Scegli ::..");
-		try {
-			String query = "select * from "+nameTable;
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			while(rs.next()) {
-				comboBox.addItem(rs.getString(parameterColumn));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	private Locale getLocale(String loc) {
-		if(loc!=null && loc.length() > 0)
-			return new Locale(loc);
-		else
-			return Locale.ITALY;
-	}
-	
-	private double getSumColumn(int column) {
-		double sum = 0;
-		int rows = table.getRowCount();
-		for(int i=0; i<rows; i++) {
-			sum += (double)table.getModel().getValueAt(i, column);
-		} return sum;
-	}
-	
 	private void LoadTable() {
 		try {
 			
 			DefaultTableModel model = new DefaultTableModel();
 			model.setColumnIdentifiers(columnNames);
-			table = new JTable();
+			
 	        table.setModel(model);
 			
 			String query = "select * from Fattura";
@@ -415,6 +324,89 @@ public class VisualizzaFatturaPanel extends JPanel {
 			e.printStackTrace();
 		}
 	}
+	
+	private void orderTable(String nameColumn, String typeOrder) {
+			try {
+			
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(columnNames);
+			
+	        table.setModel(model);
+			
+	        String query = "select * from Fattura ORDER BY " + nameColumn + " " + typeOrder;
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			String strNumero="", strIndirizzo="", strTipologia="", strAcquisitore="", strVenditore="";
+			double dblImporto = 0, dblProvvA = 0, dblProvvV = 0;
+			String strDate="";
+			int i=0;
+			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00"); 
+			
+			while(rs.next()) {
+				
+				strNumero=rs.getString("NumeroFattura");
+				strDate=rs.getString("DataFattura");
+				strIndirizzo=rs.getString("IndirizzoImmobile");
+				strTipologia=rs.getString("Tipologia");
+				dblImporto=rs.getDouble("Importo");
+				strAcquisitore=rs.getString("Acquisitore");
+				dblProvvA=rs.getDouble("ProvvigioniAcquisitore");
+				strVenditore=rs.getString("Venditore");
+				dblProvvV=rs.getDouble("ProvvigioniVenditore");
+								
+				model.addRow(new Object[]{strNumero, strDate, strIndirizzo, strTipologia, f.format(dblImporto), strAcquisitore, f.format(dblProvvA), strVenditore, f.format(dblProvvV)});
+				 
+				totaleImporto+=dblImporto;
+				totaleProvvAcq+=dblProvvA;
+				totaleProvvVen+=dblProvvV;
+				i++;
+			}
+			
+			model.addRow(new Object[] {"Totale", "", "", "", f.format(totaleImporto), "", f.format(totaleProvvAcq), "", f.format(totaleProvvVen)});
+			
+			table.setDefaultRenderer(Object.class, new provaRenderer());
+			
+			pst.close();
+			rs.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void fillComboBox(JComboBox<String> comboBox, String parameterColumn, String nameTable) {
+		comboBox.addItem("..:: Scegli ::..");
+		try {
+			String query = "select * from "+nameTable;
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next()) {
+				comboBox.addItem(rs.getString(parameterColumn));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private Locale getLocale(String loc) {
+		if(loc!=null && loc.length() > 0)
+			return new Locale(loc);
+		else
+			return Locale.ITALY;
+	}
+	
+	private double getSumColumn(int column) {
+		double sum = 0;
+		int rows = table.getRowCount();
+		for(int i=0; i<rows; i++) {
+			sum += (double)table.getModel().getValueAt(i, column);
+		} return sum;
+	}
+	
 }
 
 
