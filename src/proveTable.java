@@ -80,9 +80,7 @@ public class proveTable extends JPanel {
 				dblProvvA=rs.getDouble("ProvvigioniAcquisitore");
 				strVenditore=rs.getString("Venditore");
 				dblProvvV=rs.getDouble("ProvvigioniVenditore");
-				
-				
-				
+								
 				model.addRow(new Object[]{strNumero, strDate, strIndirizzo, strTipologia, f.format(dblImporto), strAcquisitore, f.format(dblProvvA), strVenditore, f.format(dblProvvV)});
 				 
 				totaleImporto+=dblImporto;

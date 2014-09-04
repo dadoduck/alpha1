@@ -44,6 +44,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 
 	Connection connection = null;
 	private JTable table;
+	String[] columnNames = {"Numero", "Data", "Indirizzo", "Tipologia", "Importo", "Acquisitore", "Provv A", "Venditore", "Provv V"};
 	private JTextField textFieldNumeroFattura;
 	private ObservingTextField textFieldDataFattura;
 	private JTextField textFieldIndirizzoImmobile;
@@ -68,7 +69,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 		
 //		TABLE
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(438, 84, 850, 432);
+		scrollPane.setBounds(438, 37, 850, 432);
 		add(scrollPane);
 		table = new JTable();
 		
@@ -121,10 +122,11 @@ public class VisualizzaFatturaPanel extends JPanel {
 		    	}
 		    }
 		});
-		table.setRowHeight(20);
 		
 //		refresh tabella
-		refreshTable();
+		LoadTable();
+		
+		table.setRowHeight(25);
 		
 		scrollPane.setViewportView(table);
 		
@@ -132,85 +134,85 @@ public class VisualizzaFatturaPanel extends JPanel {
 		
 		JLabel lblTitoloGestioneFatture = new JLabel("Visualizza e gestisci fatture");
 		lblTitoloGestioneFatture.setFont(new Font("Dialog", Font.BOLD, 20));
-		lblTitoloGestioneFatture.setBounds(75, 59, 373, 61);
+		lblTitoloGestioneFatture.setBounds(75, 12, 373, 61);
 		add(lblTitoloGestioneFatture);
 		
 		JLabel lblNumeroFattura = new JLabel("Numero Fattura");
-		lblNumeroFattura.setBounds(75, 134, 118, 15);
+		lblNumeroFattura.setBounds(75, 87, 118, 15);
 		add(lblNumeroFattura);
 		
 		textFieldNumeroFattura = new JTextField();
 		textFieldNumeroFattura.setEditable(false);
-		textFieldNumeroFattura.setBounds(243, 132, 114, 19);
+		textFieldNumeroFattura.setBounds(243, 85, 114, 19);
 		add(textFieldNumeroFattura);
 		textFieldNumeroFattura.setColumns(10);
 		
 		textFieldDataFattura = new ObservingTextField();
-		textFieldDataFattura.setBounds(243, 172, 114, 19);
+		textFieldDataFattura.setBounds(243, 125, 114, 19);
 		add(textFieldDataFattura);
 		textFieldDataFattura.setColumns(10);
 		
 		JLabel lblIndirizzoImmobile = new JLabel("Indirizzo Immobile");
-		lblIndirizzoImmobile.setBounds(75, 214, 133, 15);
+		lblIndirizzoImmobile.setBounds(75, 167, 133, 15);
 		add(lblIndirizzoImmobile);
 		
 		textFieldIndirizzoImmobile = new JTextField();
-		textFieldIndirizzoImmobile.setBounds(243, 212, 114, 19);
+		textFieldIndirizzoImmobile.setBounds(243, 165, 114, 19);
 		add(textFieldIndirizzoImmobile);
 		textFieldIndirizzoImmobile.setColumns(10);
 		
 		JLabel lblTipologia = new JLabel("Tipologia");
-		lblTipologia.setBounds(75, 254, 70, 15);
+		lblTipologia.setBounds(75, 207, 70, 15);
 		add(lblTipologia);
 		
 		comboBoxTipologia = new JComboBox<String>();
 		fillComboBox(comboBoxTipologia, "Tipo", "Tipologia");
-		comboBoxTipologia.setBounds(243, 249, 114, 19);
+		comboBoxTipologia.setBounds(243, 202, 114, 19);
 		add(comboBoxTipologia);
 		
 		JLabel lblImporto = new JLabel("Importo");
-		lblImporto.setBounds(75, 294, 70, 15);
+		lblImporto.setBounds(75, 247, 70, 15);
 		add(lblImporto);
 		
 		textFieldImporto = new JTextField();
-		textFieldImporto.setBounds(243, 292, 114, 19);
+		textFieldImporto.setBounds(243, 245, 114, 19);
 		add(textFieldImporto);
 		textFieldImporto.setColumns(10);
 		
 		JLabel lblAcquisitore = new JLabel("Acquisitore");
-		lblAcquisitore.setBounds(75, 334, 91, 15);
+		lblAcquisitore.setBounds(75, 287, 91, 15);
 		add(lblAcquisitore);
 		
 		comboBoxAcquisitore = new JComboBox<String>();
 		fillComboBox(comboBoxAcquisitore, "Cognome", "Personale");
-		comboBoxAcquisitore.setBounds(243, 329, 114, 19);
+		comboBoxAcquisitore.setBounds(243, 282, 114, 19);
 		add(comboBoxAcquisitore);
 		
 		JLabel lblProvvigAcquisitore = new JLabel("Provvig Acquisitore");
-		lblProvvigAcquisitore.setBounds(75, 374, 148, 15);
+		lblProvvigAcquisitore.setBounds(75, 327, 148, 15);
 		add(lblProvvigAcquisitore);
 		
 		textFieldProvvigioniAcquisitore = new JTextField();
-		textFieldProvvigioniAcquisitore.setBounds(243, 372, 114, 19);
+		textFieldProvvigioniAcquisitore.setBounds(243, 325, 114, 19);
 		add(textFieldProvvigioniAcquisitore);
 		textFieldProvvigioniAcquisitore.setColumns(10);
 		
 		JLabel lblVenditore = new JLabel("Venditore");
-		lblVenditore.setBounds(75, 414, 70, 15);
+		lblVenditore.setBounds(75, 367, 70, 15);
 		add(lblVenditore);
 		
 		JLabel lblProvvigVenditore = new JLabel("Provvig Venditore");
-		lblProvvigVenditore.setBounds(75, 454, 125, 15);
+		lblProvvigVenditore.setBounds(75, 407, 125, 15);
 		add(lblProvvigVenditore);
 		
 		textFieldProvvigioniVenditore = new JTextField();
-		textFieldProvvigioniVenditore.setBounds(243, 452, 114, 19);
+		textFieldProvvigioniVenditore.setBounds(243, 405, 114, 19);
 		add(textFieldProvvigioniVenditore);
 		textFieldProvvigioniVenditore.setColumns(10);
 		
 		comboBoxVenditore = new JComboBox<String>();
 		fillComboBox(comboBoxVenditore, "Cognome", "Personale");
-		comboBoxVenditore.setBounds(243, 409, 114, 20);
+		comboBoxVenditore.setBounds(243, 362, 114, 20);
 		add(comboBoxVenditore);
 		
 		JButton btnModificaFattura = new JButton("Modifica");
@@ -227,14 +229,14 @@ public class VisualizzaFatturaPanel extends JPanel {
 					pst.execute();
 					JOptionPane.showMessageDialog(null, "Fattura aggiornata correttamente");
 					pst.close();
-					refreshTable();
+					LoadTable();
 //					clearTextFields();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
 		});
-		btnModificaFattura.setBounds(75, 491, 133, 25);
+		btnModificaFattura.setBounds(75, 444, 133, 25);
 		add(btnModificaFattura);
 		
 		JButton btnDataFattura = new JButton("Data Fattura");
@@ -248,7 +250,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 				dp.start(textFieldDataFattura);
 			}
 		});
-		btnDataFattura.setBounds(75, 171, 125, 19);
+		btnDataFattura.setBounds(75, 124, 125, 19);
 		add(btnDataFattura);
 		
 		JButton btnClearFields = new JButton("Clear");
@@ -265,7 +267,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 				textFieldProvvigioniVenditore.setText("");
 			}
 		});
-		btnClearFields.setBounds(224, 491, 133, 25);
+		btnClearFields.setBounds(224, 444, 133, 25);
 		add(btnClearFields);
 		
 
@@ -361,32 +363,60 @@ public class VisualizzaFatturaPanel extends JPanel {
 			sum += (double)table.getModel().getValueAt(i, column);
 		} return sum;
 	}
+	
+	private void LoadTable() {
+		try {
+			
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(columnNames);
+			table = new JTable();
+	        table.setModel(model);
+			
+			String query = "select * from Fattura";
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			String strNumero="", strIndirizzo="", strTipologia="", strAcquisitore="", strVenditore="";
+			double dblImporto = 0, dblProvvA = 0, dblProvvV = 0;
+			String strDate="";
+			int i=0;
+			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00"); 
+			
+			while(rs.next()) {
+				
+				strNumero=rs.getString("NumeroFattura");
+				strDate=rs.getString("DataFattura");
+				strIndirizzo=rs.getString("IndirizzoImmobile");
+				strTipologia=rs.getString("Tipologia");
+				dblImporto=rs.getDouble("Importo");
+				strAcquisitore=rs.getString("Acquisitore");
+				dblProvvA=rs.getDouble("ProvvigioniAcquisitore");
+				strVenditore=rs.getString("Venditore");
+				dblProvvV=rs.getDouble("ProvvigioniVenditore");
+								
+				model.addRow(new Object[]{strNumero, strDate, strIndirizzo, strTipologia, f.format(dblImporto), strAcquisitore, f.format(dblProvvA), strVenditore, f.format(dblProvvV)});
+				 
+				totaleImporto+=dblImporto;
+				totaleProvvAcq+=dblProvvA;
+				totaleProvvVen+=dblProvvV;
+				i++;
+			}
+			
+			model.addRow(new Object[] {"Totale", "", "", "", f.format(totaleImporto), "", f.format(totaleProvvAcq), "", f.format(totaleProvvVen)});
+			
+			table.setDefaultRenderer(Object.class, new provaRenderer());
+			
+			pst.close();
+			rs.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
 
-class MyRenderer implements TableCellRenderer {
-	
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-			boolean hasFocus, int row, int column) {
-		
-		NumberFormat format = new DecimalFormat("#,###.00"); 
-		format.setMaximumFractionDigits(2);  
-		
-        JLabel text = new JLabel();
-        if(text!=null) {
-        	text.setText(value.toString());
-        	text.setFont(new Font("Serif", Font.PLAIN, 14));
-        }
-        if(row==(table.getRowCount()-1)) {
-        	text.setForeground(Color.blue);
-        }
-        if(column==4) {
-        	System.out.println(value);
-        }
-        return text;
-        
-        
-    }
-}
 
 
 
