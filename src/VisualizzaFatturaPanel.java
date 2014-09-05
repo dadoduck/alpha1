@@ -24,6 +24,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.TableView.TableRow;
 
+import utility.AlphaTableRender;
 import utility.DateRenderer;
 import utility.NumberRenderer;
 import net.proteanit.sql.DbUtils;
@@ -69,7 +70,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 		
 //		TABLE
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(438, 37, 850, 432);
+		scrollPane.setBounds(361, 37, 927, 432);
 		add(scrollPane);
 		table = new JTable();
 		
@@ -110,11 +111,9 @@ public class VisualizzaFatturaPanel extends JPanel {
 		    public void mouseClicked(MouseEvent e) {
 		    	int col = table.columnAtPoint(e.getPoint());
 		    	String nameColumn = table.getColumnName(col);
-		    	System.out.println(nameColumn);
 		    	if(nameColumn.equals("DataFattura")) {
 	    			nameColumn = "datetime(DataFattura)"; 
 	    		}
-		    	System.out.println(nameColumn);
 		    	if (e.getClickCount() == 1) {
 			    	orderTable(nameColumn, "ASC");
 		    	} else if(e.getClickCount() == 2) {
@@ -134,85 +133,85 @@ public class VisualizzaFatturaPanel extends JPanel {
 		
 		JLabel lblTitoloGestioneFatture = new JLabel("Visualizza e gestisci fatture");
 		lblTitoloGestioneFatture.setFont(new Font("Dialog", Font.BOLD, 20));
-		lblTitoloGestioneFatture.setBounds(75, 12, 373, 61);
+		lblTitoloGestioneFatture.setBounds(25, 12, 373, 61);
 		add(lblTitoloGestioneFatture);
 		
 		JLabel lblNumeroFattura = new JLabel("Numero Fattura");
-		lblNumeroFattura.setBounds(75, 87, 118, 15);
+		lblNumeroFattura.setBounds(25, 87, 118, 15);
 		add(lblNumeroFattura);
 		
 		textFieldNumeroFattura = new JTextField();
 		textFieldNumeroFattura.setEditable(false);
-		textFieldNumeroFattura.setBounds(243, 85, 114, 19);
+		textFieldNumeroFattura.setBounds(193, 85, 114, 19);
 		add(textFieldNumeroFattura);
 		textFieldNumeroFattura.setColumns(10);
 		
 		textFieldDataFattura = new ObservingTextField();
-		textFieldDataFattura.setBounds(243, 125, 114, 19);
+		textFieldDataFattura.setBounds(193, 125, 114, 19);
 		add(textFieldDataFattura);
 		textFieldDataFattura.setColumns(10);
 		
 		JLabel lblIndirizzoImmobile = new JLabel("Indirizzo Immobile");
-		lblIndirizzoImmobile.setBounds(75, 167, 133, 15);
+		lblIndirizzoImmobile.setBounds(25, 167, 133, 15);
 		add(lblIndirizzoImmobile);
 		
 		textFieldIndirizzoImmobile = new JTextField();
-		textFieldIndirizzoImmobile.setBounds(243, 165, 114, 19);
+		textFieldIndirizzoImmobile.setBounds(193, 165, 114, 19);
 		add(textFieldIndirizzoImmobile);
 		textFieldIndirizzoImmobile.setColumns(10);
 		
 		JLabel lblTipologia = new JLabel("Tipologia");
-		lblTipologia.setBounds(75, 207, 70, 15);
+		lblTipologia.setBounds(25, 207, 70, 15);
 		add(lblTipologia);
 		
 		comboBoxTipologia = new JComboBox<String>();
 		fillComboBox(comboBoxTipologia, "Tipo", "Tipologia");
-		comboBoxTipologia.setBounds(243, 202, 114, 19);
+		comboBoxTipologia.setBounds(193, 202, 114, 19);
 		add(comboBoxTipologia);
 		
 		JLabel lblImporto = new JLabel("Importo");
-		lblImporto.setBounds(75, 247, 70, 15);
+		lblImporto.setBounds(25, 247, 70, 15);
 		add(lblImporto);
 		
 		textFieldImporto = new JTextField();
-		textFieldImporto.setBounds(243, 245, 114, 19);
+		textFieldImporto.setBounds(193, 245, 114, 19);
 		add(textFieldImporto);
 		textFieldImporto.setColumns(10);
 		
 		JLabel lblAcquisitore = new JLabel("Acquisitore");
-		lblAcquisitore.setBounds(75, 287, 91, 15);
+		lblAcquisitore.setBounds(25, 287, 91, 15);
 		add(lblAcquisitore);
 		
 		comboBoxAcquisitore = new JComboBox<String>();
 		fillComboBox(comboBoxAcquisitore, "Cognome", "Personale");
-		comboBoxAcquisitore.setBounds(243, 282, 114, 19);
+		comboBoxAcquisitore.setBounds(193, 282, 114, 19);
 		add(comboBoxAcquisitore);
 		
 		JLabel lblProvvigAcquisitore = new JLabel("Provvig Acquisitore");
-		lblProvvigAcquisitore.setBounds(75, 327, 148, 15);
+		lblProvvigAcquisitore.setBounds(25, 327, 148, 15);
 		add(lblProvvigAcquisitore);
 		
 		textFieldProvvigioniAcquisitore = new JTextField();
-		textFieldProvvigioniAcquisitore.setBounds(243, 325, 114, 19);
+		textFieldProvvigioniAcquisitore.setBounds(193, 325, 114, 19);
 		add(textFieldProvvigioniAcquisitore);
 		textFieldProvvigioniAcquisitore.setColumns(10);
 		
 		JLabel lblVenditore = new JLabel("Venditore");
-		lblVenditore.setBounds(75, 367, 70, 15);
+		lblVenditore.setBounds(25, 367, 70, 15);
 		add(lblVenditore);
 		
 		JLabel lblProvvigVenditore = new JLabel("Provvig Venditore");
-		lblProvvigVenditore.setBounds(75, 407, 125, 15);
+		lblProvvigVenditore.setBounds(25, 407, 125, 15);
 		add(lblProvvigVenditore);
 		
 		textFieldProvvigioniVenditore = new JTextField();
-		textFieldProvvigioniVenditore.setBounds(243, 405, 114, 19);
+		textFieldProvvigioniVenditore.setBounds(193, 405, 114, 19);
 		add(textFieldProvvigioniVenditore);
 		textFieldProvvigioniVenditore.setColumns(10);
 		
 		comboBoxVenditore = new JComboBox<String>();
 		fillComboBox(comboBoxVenditore, "Cognome", "Personale");
-		comboBoxVenditore.setBounds(243, 362, 114, 20);
+		comboBoxVenditore.setBounds(193, 362, 114, 20);
 		add(comboBoxVenditore);
 		
 		JButton btnModificaFattura = new JButton("Modifica");
@@ -236,7 +235,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 				}
 			}
 		});
-		btnModificaFattura.setBounds(75, 444, 133, 25);
+		btnModificaFattura.setBounds(25, 444, 133, 25);
 		add(btnModificaFattura);
 		
 		JButton btnDataFattura = new JButton("Data Fattura");
@@ -250,7 +249,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 				dp.start(textFieldDataFattura);
 			}
 		});
-		btnDataFattura.setBounds(75, 124, 125, 19);
+		btnDataFattura.setBounds(25, 124, 125, 19);
 		add(btnDataFattura);
 		
 		JButton btnClearFields = new JButton("Clear");
@@ -267,7 +266,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 				textFieldProvvigioniVenditore.setText("");
 			}
 		});
-		btnClearFields.setBounds(224, 444, 133, 25);
+		btnClearFields.setBounds(174, 444, 133, 25);
 		add(btnClearFields);
 		
 
@@ -315,7 +314,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 			
 			model.addRow(new Object[] {"Totale", "", "", "", f.format(totaleImporto), "", f.format(totaleProvvAcq), "", f.format(totaleProvvVen)});
 			
-			table.setDefaultRenderer(Object.class, new provaRenderer());
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
 			
 			pst.close();
 			rs.close();
@@ -367,7 +366,7 @@ public class VisualizzaFatturaPanel extends JPanel {
 			
 			model.addRow(new Object[] {"Totale", "", "", "", f.format(totaleImporto), "", f.format(totaleProvvAcq), "", f.format(totaleProvvVen)});
 			
-			table.setDefaultRenderer(Object.class, new provaRenderer());
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
 			
 			pst.close();
 			rs.close();
@@ -399,13 +398,6 @@ public class VisualizzaFatturaPanel extends JPanel {
 			return Locale.ITALY;
 	}
 	
-	private double getSumColumn(int column) {
-		double sum = 0;
-		int rows = table.getRowCount();
-		for(int i=0; i<rows; i++) {
-			sum += (double)table.getModel().getValueAt(i, column);
-		} return sum;
-	}
 	
 }
 
