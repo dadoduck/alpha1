@@ -1,28 +1,41 @@
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
+
+import utility.AlphaTableRender;
+
+import javax.swing.JCheckBox;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class proveTable extends JPanel {
 	
 	Connection connection = null;
 	private JTable table;
-	String[] columnNames = {"Numero", "Data", "Indirizzo", "Tipologia", "Importo", "Acquisitore", "Provv A", "Venditore", "Provv V"};
-	Object[][] data = {};
+	private JScrollPane scrollPane;
+	private JCheckBox chckbxDataFattura;
+	private JCheckBox chckbxIndirizzo;
+	private JCheckBox chckbxTipologia;
+	private JCheckBox chckbxImporto;
+	private JCheckBox chckbxAcquisitore;
+	private JCheckBox chckbxProvvigioniA;
+	private JCheckBox chckbxVenditore;
+	private JCheckBox chckbxProvvigioniV;
+//	String[] columnNames = {"Numero", "Data", "Indirizzo", "Tipologia", "Importo", "Acquisitore", "Provv A", "Venditore", "Provv V"};
+	private boolean boolData = true, boolIndirizzo = true, boolTipologia = true, boolImporto = true, boolAcquisitore = true, boolProvvA = true, boolVenditore = true, boolProvvV = true;
+	private String[] strNameColumns;
 	
 	/**
 	 * Create the panel.
@@ -37,7 +50,7 @@ public class proveTable extends JPanel {
 		setLayout(null);
 		
 //		TABLE
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 12, 1276, 432);
 		add(scrollPane);
 		
@@ -47,23 +60,380 @@ public class proveTable extends JPanel {
 		
 		scrollPane.setViewportView(table);
 		
+		stampaStatoChkbx(boolData, boolIndirizzo, boolTipologia, boolImporto, boolAcquisitore, boolProvvA, boolVenditore, boolProvvV);
+		
+		chckbxDataFattura = new JCheckBox("Data Fattura", true);
+		chckbxDataFattura.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolData = chckbxDataFattura.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxDataFattura.setBounds(12, 464, 129, 23);
+		add(chckbxDataFattura);
+		
+		chckbxIndirizzo = new JCheckBox("Indirizzo", true);
+		chckbxIndirizzo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				boolIndirizzo = chckbxIndirizzo.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxIndirizzo.setBounds(145, 464, 91, 23);
+		add(chckbxIndirizzo);
+		
+		chckbxTipologia = new JCheckBox("Tipologia", true);
+		chckbxTipologia.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolTipologia = chckbxTipologia.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxTipologia.setBounds(250, 464, 99, 23);
+		add(chckbxTipologia);
+		
+		chckbxImporto = new JCheckBox("Importo", true);
+		chckbxImporto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolImporto = chckbxImporto.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxImporto.setBounds(360, 464, 91, 23);
+		add(chckbxImporto);
+		
+		chckbxAcquisitore = new JCheckBox("Acquisitore", true);
+		chckbxAcquisitore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolAcquisitore = chckbxAcquisitore.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxAcquisitore.setBounds(455, 464, 114, 23);
+		add(chckbxAcquisitore);
+		
+		chckbxProvvigioniA = new JCheckBox("Provvigioni A", true);
+		chckbxProvvigioniA.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolProvvA = chckbxProvvigioniA.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxProvvigioniA.setBounds(573, 464, 129, 23);
+		add(chckbxProvvigioniA);
+		
+		chckbxVenditore = new JCheckBox("Venditore", true);
+		chckbxVenditore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolVenditore = chckbxVenditore.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxVenditore.setBounds(706, 464, 99, 23);
+		add(chckbxVenditore);
+		
+		chckbxProvvigioniV = new JCheckBox("Provvigioni V", true);
+		chckbxProvvigioniV.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolProvvV = chckbxProvvigioniV.isSelected();
+				setColumnsName();
+				test();
+			}
+		});
+		chckbxProvvigioniV.setBounds(812, 464, 129, 23);
+		add(chckbxProvvigioniV);
+		
 	}
+	
+	
+	
+	/*
+	 * get numero colonne selezionate che
+	 * compongono la tabella
+	 */
+	private int getNumColumnSelected() {
+		int count=0;
+		if(boolData) count++;
+		if(boolIndirizzo) count++;
+		if(boolTipologia) count++;
+		if(boolImporto) count++;
+		if(boolAcquisitore) count++;
+		if(boolProvvA) count++;
+		if(boolVenditore) count++;
+		if(boolProvvV) count++;
+		return count;
+	}
+	
+	/*
+	 * creazione tabella con le colonne
+	 * selezionate
+	 */
+	private void setColumnsName() {
+		strNameColumns = new String[getNumColumnSelected()+1];
+		//System.out.println(getNumColumnSelected());
+		strNameColumns[0] = "NumeroFattura";
+		int index = 1;
+		if(boolData) {
+			strNameColumns[index]="DataFattura";
+			index++;
+		}
+		if(boolIndirizzo) {
+			strNameColumns[index]="IndirizzoImmobile";
+			index++;
+		}
+		if(boolTipologia) {
+			strNameColumns[index]="Tipologia";
+			index++;
+		}
+		if(boolImporto) {
+			strNameColumns[index]="Importo";
+			index++;
+		}
+		if(boolAcquisitore) { 
+			strNameColumns[index]="Acquisitore";
+			index++;
+		}
+		if(boolProvvA) { 
+			strNameColumns[index]="ProvvigioniAcquisitore";
+			index++;
+		}
+		if(boolVenditore) {
+			strNameColumns[index]="Venditore";
+			index++;
+		}
+		if(boolProvvV) {
+			strNameColumns[index]="ProvvigioniVenditore";
+			index++;
+		}
+		
+	}
+	
+	/*
+	 * creazione query da selezione
+	 */
+	private String getQuery() {
+		String query = "select NumeroFattura ";
+		if(boolData) query+=", DataFattura";
+		if(boolIndirizzo) query+=", IndirizzoImmobile";
+		if(boolTipologia) query+=", Tipologia";
+		if(boolImporto) query+=", Importo";
+		if(boolAcquisitore) query+=", Acquisitore";
+		if(boolProvvA) query+=", ProvvigioniAcquisitore";
+		if(boolVenditore) query+=", Venditore";
+		if(boolProvvV) query+=", ProvvigioniVenditore";
+		query+=" from Fattura";
+		return query;
+	}
+	
+	/*
+	 * creazione tabella
+	 */
+	private void printTable() {
+		scrollPane.getViewport().remove(table);
+		try {
+			
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(strNameColumns);
+			table = new JTable();
+	        table.setModel(model);
+	        
+	        String query = getQuery();
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			
+			
+			while(rs.next()) {
+				
+				List<Object> row = new ArrayList<Object>();
+								
+				row.add(rs.getString("NumeroFattura"));
+				
+				if(isPresent("DataFattura"))
+					row.add(rs.getString("DataFattura"));
+				if(isPresent("IndirizzoImmobile"))
+					row.add(rs.getString("IndirizzoImmobile"));
+				if(isPresent("Tipologia"))
+					row.add(rs.getString("Tipologia"));
+				if(isPresent("Importo"))
+					row.add(rs.getDouble("Importo"));
+				if(isPresent("Acquisitore"))
+					row.add(rs.getString("Acquisitore"));
+				if(isPresent("ProvvigioniAcquisitore"))
+					row.add(rs.getDouble("ProvvigioniAcquisitore"));
+				if(isPresent("Venditore"))
+					row.add(rs.getString("Venditore"));
+				if(isPresent("ProvvigioniVenditore"))
+					row.add(rs.getDouble("ProvvigioniVenditore"));
+				
+				model.addRow(row.toArray());
+				
+			}
+			
+			
+			
+			pst.close();
+			rs.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		scrollPane.getViewport().add(table);
+        
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private boolean isPresent(String colonna) {
+		for(int i=0; i<strNameColumns.length; i++)
+			if(strNameColumns[i].equals(colonna))
+				return true;
+		return false;
+	}
+	
+	
+	
+	
+	
+//			METODI DI TEST
+	
+	
+	
+	/*
+	 * metodo do test comune a tutte le chkbox
+	 */
+	private void test() {
+		stampaStatoChkbx(boolData, boolIndirizzo, boolTipologia, boolImporto, boolAcquisitore, boolProvvA, boolVenditore, boolProvvV);
+		System.out.println(getNumColumnSelected());
+		stampaColonneSelezionate();
+		printTable();
+	}
+	
+	
+	
+	/*
+	 * stampa colonne selezionate 
+	 */
+	private void stampaColonneSelezionate() {
+		System.out.println("numero sel -> " + getNumColumnSelected());
+		System.out.println("selezionate: ");
+		for(int i=0; i<strNameColumns.length; i++) {
+			System.out.println(strNameColumns[i]);
+		}
+	}	
+	
+	/*
+	 * metodo test per controllare checkbox selezionate
+	 */
+	private void stampaStatoChkbx(boolean data, boolean indirizzo, boolean tipologia, boolean importo, boolean acquisitore, boolean provvA, boolean venditore, boolean provvV) {
+		System.out.println("Data Fattura: " + data);
+		System.out.println("Indirizzo: " + indirizzo);
+		System.out.println("Tipologia: " + tipologia);
+		System.out.println("Importo: " + importo);
+		System.out.println("Acquisitore: " + acquisitore);
+		System.out.println("Provvigioni Acquisitore: " + provvA);
+		System.out.println("Venditore: " + venditore);
+		System.out.println("Provvigioni Venditore: " + provvV);
+		System.out.println("################################");
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private String[] getColumnNames() {
+		int i=1; int j=1; 
+		if(boolData) i++;
+		if(boolIndirizzo) i++;
+		if(boolTipologia) i++;
+		if(boolImporto) i++;
+		if(boolAcquisitore) i++;
+		if(boolProvvA) i++;
+		if(boolVenditore) i++;
+		if(boolProvvV) i++;
+			
+		String[] columnNames = new String[i];
+		columnNames[0]="NumeroFattura";
+		if(boolData) {
+			columnNames[j]="DataFattura";
+			j++;
+		}
+		if(boolIndirizzo) {
+			columnNames[j]="IndirizzoImmobile";
+			j++;
+		}
+		if(boolTipologia) {
+			columnNames[j]="Tipologia";
+			j++;
+		}
+		if(boolImporto) {
+			columnNames[j]="Importo";
+			j++;
+		}
+		if(boolAcquisitore) { 
+			columnNames[j]="Acquisitore";
+			j++;
+		}
+		if(boolProvvA) { 
+			columnNames[j]="ProvvigioniAcquisitore";
+			j++;
+		}
+		if(boolVenditore) {
+			columnNames[j]="Venditore";
+			j++;
+		}
+		if(boolProvvV) {
+			columnNames[j]="ProvvigioniVenditore";
+			j++;
+		}
+		return columnNames;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	private void LoadTable() {
 		try {
 			
 			DefaultTableModel model = new DefaultTableModel();
-			model.setColumnIdentifiers(columnNames);
+			model.setColumnIdentifiers(getColumnNames());
 			table = new JTable();
 	        table.setModel(model);
 			
-			String query = "select * from Fattura";
+			//String query = "select * from Fattura";
+	        String query = getQuery();
 			PreparedStatement pst = connection.prepareStatement(query);
 			ResultSet rs = pst.executeQuery();
 			
 			String strNumero="", strIndirizzo="", strTipologia="", strAcquisitore="", strVenditore="";
 			double dblImporto = 0, dblProvvA = 0, dblProvvV = 0;
 			String strDate="";
+			
 			int i=0;
 			
 			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
@@ -72,14 +442,22 @@ public class proveTable extends JPanel {
 			while(rs.next()) {
 				
 				strNumero=rs.getString("NumeroFattura");
-				strDate=rs.getString("DataFattura");
-				strIndirizzo=rs.getString("IndirizzoImmobile");
-				strTipologia=rs.getString("Tipologia");
-				dblImporto=rs.getDouble("Importo");
-				strAcquisitore=rs.getString("Acquisitore");
-				dblProvvA=rs.getDouble("ProvvigioniAcquisitore");
-				strVenditore=rs.getString("Venditore");
-				dblProvvV=rs.getDouble("ProvvigioniVenditore");
+				if(!rs.getString("DataFattura").equals(""))
+					strDate=rs.getString("DataFattura");
+				if(rs.getString("IndirizzoImmobile")!="")
+					strIndirizzo=rs.getString("IndirizzoImmobile");
+				if(rs.getString("Tipologia")!="")
+					strTipologia=rs.getString("Tipologia");
+				if(rs.getDouble("Importo")!=0)
+					dblImporto=rs.getDouble("Importo");
+				if(rs.getString("Acquisitore")!="")
+					strAcquisitore=rs.getString("Acquisitore");
+				if(rs.getDouble("ProvvigioniAcquisitore")!=0)
+					dblProvvA=rs.getDouble("ProvvigioniAcquisitore");
+				if(rs.getString("Venditore")!="")
+					strVenditore=rs.getString("Venditore");
+				if(rs.getDouble("ProvvigioniVenditore")!=0)
+					dblProvvV=rs.getDouble("ProvvigioniVenditore");
 								
 				model.addRow(new Object[]{strNumero, strDate, strIndirizzo, strTipologia, f.format(dblImporto), strAcquisitore, f.format(dblProvvA), strVenditore, f.format(dblProvvV)});
 				 
@@ -91,7 +469,7 @@ public class proveTable extends JPanel {
 			
 			model.addRow(new Object[] {"Totale", "", "", "", f.format(totaleImporto), "", f.format(totaleProvvAcq), "", f.format(totaleProvvVen)});
 			
-			table.setDefaultRenderer(Object.class, new provaRenderer());
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
 			
 			pst.close();
 			rs.close();
@@ -100,37 +478,6 @@ public class proveTable extends JPanel {
 			e.printStackTrace();
 		}
 	}
-
-}
-
-class provaRenderer implements TableCellRenderer {
 	
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-			boolean hasFocus, int row, int column) {
-		
-		NumberFormat format = new DecimalFormat("#,###.00"); 
-		format.setMaximumFractionDigits(2);  
-		
-        JLabel text = new JLabel();
-        if(text!=null) {
-        	text.setText(value.toString());
-        	System.out.println(text.getFont());
-        	System.out.println(text.getFont());
-        	text.setFont(new Font("Dialog", Font.PLAIN, 12));
-        	System.out.println(text.getFont());
-        }
-        if(row==(table.getRowCount()-1)) {
-        	text.setFont(new Font("Dialog", Font.BOLD, 12));
-        }
-        if((column==4) || (column==6) || (column==8)) {
-        	text.setHorizontalAlignment(SwingConstants.RIGHT);
-        	System.out.println(value);
-        }
-        if((column==0) || (column==1)) {
-        	text.setHorizontalAlignment(SwingConstants.CENTER);
-        }
-        return text;
-        
-        
-    }
 }
+
