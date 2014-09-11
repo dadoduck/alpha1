@@ -26,16 +26,23 @@ public class AlphaTableRender implements TableCellRenderer {
         if(row==(table.getRowCount()-1)) {
         	text.setFont(new Font("Dialog", Font.BOLD, 12));
         }
-        if((column==4) || (column==6) || (column==8)) {
+        if((table.getColumnName(column).equals("Importo")) || 
+        		(table.getColumnName(column).equals("ProvvigioniAcquisitore")) || 
+        		(table.getColumnName(column).equals("ProvvigioniVenditore"))) {
         	text.setHorizontalAlignment(SwingConstants.RIGHT);
         }
-        if((column==0) || (column==1)) {
+        if((table.getColumnName(column).equals("NumeroFattura")) || (table.getColumnName(column).equals("DataFattura"))) {
         	text.setHorizontalAlignment(SwingConstants.CENTER);
         }
-        if((column==2) || (column==3) || (column==5) || (column==7)) {
+        if((table.getColumnName(column).equals("IndirizzoImmobile")) ||
+        		(table.getColumnName(column).equals("Tipologia")) ||
+        		(table.getColumnName(column).equals("Acquisitore")) ||
+        		(table.getColumnName(column).equals("Venditore"))) {
         	text.setBorder(new EmptyBorder(0, 7, 0, 0) );
         }
-        if((column==4) || (column==6) || (column==8)) {
+        if((table.getColumnName(column).equals("Importo")) ||
+        		(table.getColumnName(column).equals("ProvvigioniAcquisitore")) ||
+        		(table.getColumnName(column).equals("ProvvigioniVenditore"))) {
         	text.setBorder(new EmptyBorder(0, 0, 0, 7) );
         }
         	

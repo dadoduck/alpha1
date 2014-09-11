@@ -248,7 +248,8 @@ public class proveTable extends JPanel {
 			PreparedStatement pst = connection.prepareStatement(query);
 			ResultSet rs = pst.executeQuery();
 			
-			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00");
 			
 			while(rs.next()) {
 				
@@ -262,22 +263,52 @@ public class proveTable extends JPanel {
 					row.add(rs.getString("IndirizzoImmobile"));
 				if(isPresent("Tipologia"))
 					row.add(rs.getString("Tipologia"));
-				if(isPresent("Importo"))
-					row.add(rs.getDouble("Importo"));
+				if(isPresent("Importo")) {
+					row.add(f.format(rs.getDouble("Importo")));
+					totaleImporto+=rs.getDouble("Importo");
+				}
 				if(isPresent("Acquisitore"))
 					row.add(rs.getString("Acquisitore"));
-				if(isPresent("ProvvigioniAcquisitore"))
-					row.add(rs.getDouble("ProvvigioniAcquisitore"));
+				if(isPresent("ProvvigioniAcquisitore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
+					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
+				}
 				if(isPresent("Venditore"))
 					row.add(rs.getString("Venditore"));
-				if(isPresent("ProvvigioniVenditore"))
-					row.add(rs.getDouble("ProvvigioniVenditore"));
+				if(isPresent("ProvvigioniVenditore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
+					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
+				}
 				
 				model.addRow(row.toArray());
 				
+				
 			}
 			
+			List<Object> finalRow = new ArrayList<Object>();
 			
+			finalRow.add("TOTALE");
+			if(isPresent("DataFattura"))
+				finalRow.add("");
+			if(isPresent("IndirizzoImmobile"))
+				finalRow.add("");
+			if(isPresent("Tipologia"))
+				finalRow.add("");
+			if(isPresent("Importo"))
+				finalRow.add(f.format(totaleImporto));
+			if(isPresent("Acquisitore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniAcquisitore"))
+				finalRow.add(f.format(totaleProvvAcq));
+			if(isPresent("Venditore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniVenditore"))
+				finalRow.add(f.format(totaleProvvVen));
+			
+			model.addRow(finalRow.toArray());
+			
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
+			table.setRowHeight(25);
 			
 			pst.close();
 			rs.close();
