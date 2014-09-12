@@ -183,6 +183,8 @@ public class proveTable extends JPanel {
 				minSlider=sliderMinImporto.getValue();
 				sliderMaxImporto.setMinimum(sliderMinImporto.getValue());
 				sliderMaxImporto.repaint();
+				setColumnsName();
+				printTableMinMax();
 				System.out.println(minSlider + "   " + maxSlider);
 			}
 		});
@@ -193,6 +195,8 @@ public class proveTable extends JPanel {
 				maxSlider=sliderMaxImporto.getValue();
 				sliderMinImporto.setMaximum(sliderMaxImporto.getValue());
 				sliderMinImporto.repaint();
+				setColumnsName();
+				printTableMinMax();
 				System.out.println(minSlider + "   " + maxSlider);
 			}
 		});
@@ -563,6 +567,110 @@ public class proveTable extends JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String getQueryMinMax() {
+		String query = "select NumeroFattura ";
+		if(boolData) query+=", DataFattura";
+		if(boolIndirizzo) query+=", IndirizzoImmobile";
+		if(boolTipologia) query+=", Tipologia";
+		if(boolImporto) query+=", Importo";
+		if(boolAcquisitore) query+=", Acquisitore";
+		if(boolProvvA) query+=", ProvvigioniAcquisitore";
+		if(boolVenditore) query+=", Venditore";
+		if(boolProvvV) query+=", ProvvigioniVenditore";
+		query+=" from Fattura where Importo >= " + minSlider + " and Importo <= " + maxSlider;
+		return query;
+	}
+	
+	/*
+	 * Overloading creazione tabella
+	 * parametro query 
+	 * con clausola where sulla select
+	 */
+	private void printTableMinMax(){
+		scrollPane.getViewport().remove(table);
+		try {
+			
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(strNameColumns);
+			table = new JTable();
+	        table.setModel(model);
+	        
+	        String query = getQueryMinMax();
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00");
+			
+			while(rs.next()) {
+				
+				List<Object> row = new ArrayList<Object>();
+								
+				row.add(rs.getString("NumeroFattura"));
+				
+				if(isPresent("DataFattura"))
+					row.add(rs.getString("DataFattura"));
+				if(isPresent("IndirizzoImmobile"))
+					row.add(rs.getString("IndirizzoImmobile"));
+				if(isPresent("Tipologia"))
+					row.add(rs.getString("Tipologia"));
+				if(isPresent("Importo")) {
+					row.add(f.format(rs.getDouble("Importo")));
+					totaleImporto+=rs.getDouble("Importo");
+				}
+				if(isPresent("Acquisitore"))
+					row.add(rs.getString("Acquisitore"));
+				if(isPresent("ProvvigioniAcquisitore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
+					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
+				}
+				if(isPresent("Venditore"))
+					row.add(rs.getString("Venditore"));
+				if(isPresent("ProvvigioniVenditore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
+					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
+				}
+				
+				model.addRow(row.toArray());
+				
+				
+			}
+			
+			List<Object> finalRow = new ArrayList<Object>();
+			
+			finalRow.add("TOTALE");
+			if(isPresent("DataFattura"))
+				finalRow.add("");
+			if(isPresent("IndirizzoImmobile"))
+				finalRow.add("");
+			if(isPresent("Tipologia"))
+				finalRow.add("");
+			if(isPresent("Importo"))
+				finalRow.add(f.format(totaleImporto));
+			if(isPresent("Acquisitore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniAcquisitore"))
+				finalRow.add(f.format(totaleProvvAcq));
+			if(isPresent("Venditore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniVenditore"))
+				finalRow.add(f.format(totaleProvvVen));
+			
+			model.addRow(finalRow.toArray());
+			
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
+			table.setRowHeight(25);
+			
+			pst.close();
+			rs.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		scrollPane.setViewportView(table);
+        
 	}
 	
 	
