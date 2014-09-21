@@ -103,6 +103,20 @@ public class MainFrame extends JFrame {
 		JMenu mnAiuto = new JMenu("Aiuto");
 		menuBar.add(mnAiuto);
 		
+		JMenuItem mntmProve = new JMenuItem("prove");
+		mntmProve.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				proveTable proveTablePanel = new proveTable();
+				container.removeAll();
+				container.repaint();
+				container.revalidate();
+				container.add(proveTablePanel);
+				container.repaint();
+				container.revalidate();
+			}
+		});
+		mnAiuto.add(mntmProve);
+		
 		
 		
 		
