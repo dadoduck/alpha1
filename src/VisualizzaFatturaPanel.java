@@ -272,6 +272,9 @@ public class VisualizzaFatturaPanel extends JPanel {
 
 	}
 	
+	/*
+	 * carica tabella
+	 */
 	private void LoadTable() {
 		try {
 			
@@ -324,6 +327,9 @@ public class VisualizzaFatturaPanel extends JPanel {
 		}
 	}
 	
+	/*
+	 * carica tabella ordinata
+	 */
 	private void orderTable(String nameColumn, String typeOrder) {
 			try {
 			
@@ -376,6 +382,9 @@ public class VisualizzaFatturaPanel extends JPanel {
 		}
 	}
 	
+	/*
+	 * carica valori da database in combobox
+	 */
 	private void fillComboBox(JComboBox<String> comboBox, String parameterColumn, String nameTable) {
 		comboBox.addItem("..:: Scegli ::..");
 		try {
@@ -391,6 +400,9 @@ public class VisualizzaFatturaPanel extends JPanel {
 		
 	}
 	
+	/*
+	 * set data for datepicker
+	 */
 	private Locale getLocale(String loc) {
 		if(loc!=null && loc.length() > 0)
 			return new Locale(loc);
