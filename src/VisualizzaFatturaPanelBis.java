@@ -13,6 +13,8 @@ import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.event.ActionListener;
@@ -22,6 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -31,6 +35,11 @@ import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 
 import utility.AlphaTableRender;
+
+import javax.swing.JSlider;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 
 public class VisualizzaFatturaPanelBis extends JPanel {
@@ -46,6 +55,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	
 	private ImagePanel pnDatiFattura;
 	private ImagePanel pnCheckboxFattura;
+	private ImagePanel pnSearchForImportFattura;
 	
 	private JTextField tfDatiFatturaNumero;
 	private JTextField tfDatiFatturaData;
@@ -67,6 +77,17 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private JCheckBox chckbxProvvA;
 	private JCheckBox chckbxVenditore;
 	private JCheckBox chckbxProvvV;
+	private JSlider sliderMinimo;
+	private JSlider sliderMassimo;
+	
+//	Valori JSlider 
+//	intervallo di consistenza		[ minImporto ----- minSlider ----- maxSlider ----- maxImporto ]
+	private double minImporto = 0;
+	private double maxImporto = 0;
+	private int minSlider = 0;
+	private int maxSlider = 0;
+	private JLabel lblMinimo;
+	private JLabel lblMassimo;
 	
 	/**
 	 * Create the panel.
@@ -260,11 +281,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 		
 //		###	CENTER			#############################################################################################################
-		
-
-		
-		
-		
+				
 		//		TABLE
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 12, 1276, 432);
@@ -279,25 +296,17 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
 //		###	RIGHT			#############################################################################################################
 		
 		rightPanel = new JPanel();
 		rightPanel.setLayout(null);
 		
-		// pannello con i dati della fattura
+		// *************** pannello con i dati della fattura
 		
 		pnCheckboxFattura = new ImagePanel(new ImageIcon("images/sfondo.jpg").getImage());
 		pnCheckboxFattura.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
 		pnCheckboxFattura.setLayout(null);
-		pnCheckboxFattura.setBounds(20, 20, 300, 430);
+		pnCheckboxFattura.setBounds(20, 20, 300, 260);
 		
 		// titolo pannello
 		JLabel lblCheckboxFattura = new JLabel("Colonne visualizzate");
@@ -310,9 +319,10 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		JButton btnPlusCollapseCheck = new JButton();
 		btnPlusCollapseCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				pnCheckboxFattura.setSize(300, 430);
-				pnCheckboxFattura.revalidate();
-				pnCheckboxFattura.repaint();
+				pnCheckboxFattura.setSize(300, 260);
+				pnSearchForImportFattura.setBounds(20, pnCheckboxFattura.getHeight() + 40, 300, pnSearchForImportFattura.getHeight());
+				rightPanel.revalidate();
+				rightPanel.repaint();
 			}
 		});
 		btnPlusCollapseCheck.setBounds(236, 12, 20, 20);
@@ -325,8 +335,9 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		btnMinusCollapseCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnCheckboxFattura.setSize(300, 40);
-				pnCheckboxFattura.revalidate();
-				pnCheckboxFattura.repaint();
+				pnSearchForImportFattura.setBounds(20, pnCheckboxFattura.getHeight() + 40, 300, pnSearchForImportFattura.getHeight());
+				rightPanel.revalidate();
+				rightPanel.repaint();
 			}
 		});
 		btnMinusCollapseCheck.setBounds(268, 12, 20, 20);
@@ -446,6 +457,117 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		chckbxProvvV.setBounds(159, 220, 129, 20);
 		chckbxProvvV.setOpaque(false);
 		pnCheckboxFattura.add(chckbxProvvV);
+		
+		
+		
+		// *************** pannello selezione importo
+		
+		pnSearchForImportFattura = new ImagePanel(new ImageIcon("images/sfondo.jpg").getImage());
+		pnSearchForImportFattura.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
+		pnSearchForImportFattura.setLayout(null);
+		pnSearchForImportFattura.setBounds(20, 300, 300, 245);  // da controllare
+				
+		// titolo pannello
+		JLabel lblSearchForImportFattura = new JLabel("Filtra per importo");
+		lblSearchForImportFattura.setForeground(new Color(255, 255, 255));
+		lblSearchForImportFattura.setFont(new Font("Ubuntu", Font.BOLD, 15));
+		lblSearchForImportFattura.setBounds(12, 12, 184, 20);
+		pnSearchForImportFattura.add(lblSearchForImportFattura);
+		
+		// btn plus collapse
+		JButton btnPlusCollapseSearch = new JButton();
+		btnPlusCollapseSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnSearchForImportFattura.setSize(300, 245);
+				pnSearchForImportFattura.revalidate();
+				pnSearchForImportFattura.repaint();
+			}
+		});
+		btnPlusCollapseSearch.setBounds(236, 12, 20, 20);
+		Image imgPlusCollapseSearch = new ImageIcon(this.getClass().getResource("/plusCollapse.png")).getImage();
+		btnPlusCollapseSearch.setIcon(new ImageIcon(imgPlusCollapseSearch));
+		pnSearchForImportFattura.add(btnPlusCollapseSearch);
+		
+		// btn minus collapse
+		JButton btnMinusCollapseSearch = new JButton();
+		btnMinusCollapseSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnSearchForImportFattura.setSize(300, 40);
+				pnSearchForImportFattura.revalidate();
+				pnSearchForImportFattura.repaint();
+			}
+		});
+		btnMinusCollapseSearch.setBounds(268, 12, 20, 20);
+		Image imgMinusCollapseSearch = new ImageIcon(this.getClass().getResource("/minusCollapse.png")).getImage();
+		btnMinusCollapseSearch.setIcon(new ImageIcon(imgMinusCollapseSearch));
+		pnSearchForImportFattura.add(btnMinusCollapseSearch);
+		
+		// separatore testata - dati
+		JSeparator separatorCollapseSearch = new JSeparator();
+		separatorCollapseSearch.setBackground(new Color(255, 255, 255));
+		separatorCollapseSearch.setBounds(12, 47, 276, 2);
+		pnSearchForImportFattura.add(separatorCollapseSearch);
+		
+
+		rightPanel.add(pnSearchForImportFattura);
+		
+		// slider selezione minimo e massimo
+		lblMinimo = new JLabel("Minimo:   ");
+		lblMinimo.setForeground(new Color(255, 255, 255));
+		lblMinimo.setBounds(36, 70, 160, 15);
+		pnSearchForImportFattura.add(lblMinimo);
+		
+		sliderMinimo = new JSlider();
+		sliderMinimo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				minSlider=sliderMinimo.getValue();
+				sliderMassimo.setMinimum(sliderMinimo.getValue());
+				sliderMassimo.repaint();
+				setColumnsName();
+				printTableMinMax();
+				System.out.println(minSlider + "   " + maxSlider);
+			}
+		});
+		sliderMinimo.setBounds(36, 99, 200, 16);
+		sliderMinimo.setOpaque(false);
+		pnSearchForImportFattura.add(sliderMinimo);
+		
+		lblMassimo = new JLabel("Massimo:   ");
+		lblMassimo.setForeground(new Color(255, 255, 255));
+		lblMassimo.setBounds(36, 162, 160, 15);
+		pnSearchForImportFattura.add(lblMassimo);
+		
+		sliderMassimo = new JSlider();
+		sliderMassimo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				maxSlider=sliderMassimo.getValue();
+				sliderMinimo.setMaximum(sliderMassimo.getValue());
+				sliderMinimo.repaint();
+				setColumnsName();
+				printTableMinMax();
+				System.out.println(minSlider + "   " + maxSlider);
+			}
+		});
+		sliderMassimo.setBounds(36, 189, 200, 16);
+		sliderMassimo.setOpaque(false);
+		pnSearchForImportFattura.add(sliderMassimo);
+		
+		setMinMaxImporto();
+		
+		sliderMinimo.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				lblMinimo.setText("Minimo:   " + sliderMinimo.getValue());
+			}
+		});
+		
+		sliderMassimo.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				lblMassimo.setText("Massimo:   " + sliderMassimo.getValue());
+			}
+		});
+		
 		
 		rightPanel.setPreferredSize(new Dimension(350, 400));
 		add(rightPanel, BorderLayout.LINE_END);
@@ -580,6 +702,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		stampaStatoChkbx(boolData, boolIndirizzo, boolTipologia, boolImporto, boolAcquisitore, boolProvvA, boolVenditore, boolProvvV);
 		System.out.println(getNumColumnSelected());
 		stampaColonneSelezionate();
+		printTable();
 	}
 	
 	/*
@@ -623,6 +746,16 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		if(boolProvvV) query+=", ProvvigioniVenditore";
 		query+=" from Fattura";
 		return query;
+	}
+	
+	/*
+	 * verifica se la colonna è presente in tabella
+	 */
+	private boolean isPresent(String colonna) {
+		for(int i=0; i<strNameColumns.length; i++)
+			if(strNameColumns[i].equals(colonna))
+				return true;
+		return false;
 	}
 	
 	/*
@@ -690,7 +823,235 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		}
 	}
 	
+	/*
+	 * creazione tabella
+	 */
+	private void printTable() {
+
+		scrollPane.getViewport().remove(table);
+		try {
+			
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(strNameColumns);
+			table = new JTable();
+	        table.setModel(model);
+	        
+	        String query = getQuery();
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00");
+			
+			while(rs.next()) {
+				
+				List<Object> row = new ArrayList<Object>();
+								
+				row.add(rs.getString("NumeroFattura"));
+				
+				if(isPresent("DataFattura"))
+					row.add(rs.getString("DataFattura"));
+				if(isPresent("IndirizzoImmobile"))
+					row.add(rs.getString("IndirizzoImmobile"));
+				if(isPresent("Tipologia"))
+					row.add(rs.getString("Tipologia"));
+				if(isPresent("Importo")) {
+					row.add(f.format(rs.getDouble("Importo")));
+					totaleImporto+=rs.getDouble("Importo");
+				}
+				if(isPresent("Acquisitore"))
+					row.add(rs.getString("Acquisitore"));
+				if(isPresent("ProvvigioniAcquisitore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
+					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
+				}
+				if(isPresent("Venditore"))
+					row.add(rs.getString("Venditore"));
+				if(isPresent("ProvvigioniVenditore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
+					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
+				}
+				
+				model.addRow(row.toArray());
+				
+				
+			}
+			
+			List<Object> finalRow = new ArrayList<Object>();
+			
+			finalRow.add("TOTALE");
+			if(isPresent("DataFattura"))
+				finalRow.add("");
+			if(isPresent("IndirizzoImmobile"))
+				finalRow.add("");
+			if(isPresent("Tipologia"))
+				finalRow.add("");
+			if(isPresent("Importo"))
+				finalRow.add(f.format(totaleImporto));
+			if(isPresent("Acquisitore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniAcquisitore"))
+				finalRow.add(f.format(totaleProvvAcq));
+			if(isPresent("Venditore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniVenditore"))
+				finalRow.add(f.format(totaleProvvVen));
+			
+			model.addRow(finalRow.toArray());
+			
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
+			table.setRowHeight(25);
+			
+			pst.close();
+			rs.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		scrollPane.setViewportView(table);
+        
+	}
 	
+	/*
+	 * Overloading creazione tabella
+	 * parametro query 
+	 * con clausola where sulla select
+	 */
+	private void printTableMinMax(){
+		scrollPane.getViewport().remove(table);
+		try {
+			
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(strNameColumns);
+			table = new JTable();
+	        table.setModel(model);
+	        
+	        String query = getQueryMinMax();
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00");
+			
+			while(rs.next()) {
+				
+				List<Object> row = new ArrayList<Object>();
+								
+				row.add(rs.getString("NumeroFattura"));
+				
+				if(isPresent("DataFattura"))
+					row.add(rs.getString("DataFattura"));
+				if(isPresent("IndirizzoImmobile"))
+					row.add(rs.getString("IndirizzoImmobile"));
+				if(isPresent("Tipologia"))
+					row.add(rs.getString("Tipologia"));
+				if(isPresent("Importo")) {
+					row.add(f.format(rs.getDouble("Importo")));
+					totaleImporto+=rs.getDouble("Importo");
+				}
+				if(isPresent("Acquisitore"))
+					row.add(rs.getString("Acquisitore"));
+				if(isPresent("ProvvigioniAcquisitore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
+					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
+				}
+				if(isPresent("Venditore"))
+					row.add(rs.getString("Venditore"));
+				if(isPresent("ProvvigioniVenditore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
+					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
+				}
+				
+				model.addRow(row.toArray());
+				
+				
+			}
+			
+			List<Object> finalRow = new ArrayList<Object>();
+			
+			finalRow.add("TOTALE");
+			if(isPresent("DataFattura"))
+				finalRow.add("");
+			if(isPresent("IndirizzoImmobile"))
+				finalRow.add("");
+			if(isPresent("Tipologia"))
+				finalRow.add("");
+			if(isPresent("Importo"))
+				finalRow.add(f.format(totaleImporto));
+			if(isPresent("Acquisitore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniAcquisitore"))
+				finalRow.add(f.format(totaleProvvAcq));
+			if(isPresent("Venditore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniVenditore"))
+				finalRow.add(f.format(totaleProvvVen));
+			
+			model.addRow(finalRow.toArray());
+			
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
+			table.setRowHeight(25);
+			
+			pst.close();
+			rs.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		scrollPane.setViewportView(table);
+        
+	}
+	
+	/*
+	 * ritorna query con clausola 
+	 * su importo
+	 */
+	private String getQueryMinMax() {
+		String query = "select NumeroFattura ";
+		if(boolData) query+=", DataFattura";
+		if(boolIndirizzo) query+=", IndirizzoImmobile";
+		if(boolTipologia) query+=", Tipologia";
+		if(boolImporto) query+=", Importo";
+		if(boolAcquisitore) query+=", Acquisitore";
+		if(boolProvvA) query+=", ProvvigioniAcquisitore";
+		if(boolVenditore) query+=", Venditore";
+		if(boolProvvV) query+=", ProvvigioniVenditore";
+		query+=" from Fattura where Importo >= " + minSlider + " and Importo <= " + maxSlider;
+		return query;
+	}
+	
+	/*
+	 * set importo minimo ed importo massimo 
+	 * presente in db
+	 */
+	private void setMinMaxImporto() {
+		try {
+			String query = "select Importo from Fattura";
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			minImporto = rs.getDouble("Importo");
+			maxImporto = rs.getDouble("Importo");
+			while(rs.next()) {
+				if(minImporto > rs.getDouble("Importo"))
+					minImporto = rs.getDouble("Importo");
+				if(maxImporto < rs.getDouble("Importo"))
+					maxImporto = rs.getDouble("Importo");
+			}
+			System.out.println("Minimo: " + minImporto);
+			System.out.println("Massimo: " + maxImporto);
+			
+			sliderMinimo.setMinimum((int)minImporto);
+			sliderMinimo.setMaximum((int)maxImporto);
+			
+			sliderMassimo.setMaximum((int)maxImporto);
+			sliderMassimo.setMinimum((int)minImporto);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 }
 
 
@@ -700,26 +1061,26 @@ public class VisualizzaFatturaPanelBis extends JPanel {
  * pannello con sfondo
  */
 class ImagePanel extends JPanel {
+	
+	private Image img;
 
-	  private Image img;
+	public ImagePanel(String img) {
+		this(new ImageIcon(img).getImage());
+	}
 
-	  public ImagePanel(String img) {
-	    this(new ImageIcon(img).getImage());
-	  }
-
-	  public ImagePanel(Image img) {
-	    this.img = img;
-	    Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
-	    setPreferredSize(size);
+	public ImagePanel(Image img) {
+		this.img = img;
+		Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
+		setPreferredSize(size);
 	    setMinimumSize(size);
 	    setMaximumSize(size);
 	    setSize(size);
 	    setLayout(null);
-	  }
-
-	  public void paintComponent(Graphics g) {
-	    g.drawImage(img, 0, 0, null);
-	  }
-
 	}
+
+	public void paintComponent(Graphics g) {
+		g.drawImage(img, 0, 0, null);
+	}
+
+}
 
