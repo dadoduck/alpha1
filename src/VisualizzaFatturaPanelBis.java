@@ -88,6 +88,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private int maxSlider = 0;
 	private JLabel lblMinimo;
 	private JLabel lblMassimo;
+	private JTextField tfDatiFatturaIndirizzo;
 	
 	/**
 	 * Create the panel.
@@ -190,7 +191,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		lblIndirizzoImmobile.setBounds(12, 110, 139, 15);
 		pnDatiFattura.add(lblIndirizzoImmobile);
 		
-		JTextField tfDatiFatturaIndirizzo = new JTextField();
+		tfDatiFatturaIndirizzo = new JTextField();
 		tfDatiFatturaIndirizzo.setBackground(new Color(224, 255, 255));
 		tfDatiFatturaIndirizzo.setBounds(142, 110, 146, 20);
 		pnDatiFattura.add(tfDatiFatturaIndirizzo);
@@ -202,6 +203,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		pnDatiFattura.add(lblTipologia);
 		
 		cbDatiFatturaTipologia = new JComboBox<String>();
+		fillComboBox(cbDatiFatturaTipologia, "Tipo", "Tipologia");
 		cbDatiFatturaTipologia.setBackground(new Color(224, 255, 255));
 		cbDatiFatturaTipologia.setBounds(142, 150, 146, 20);
 		pnDatiFattura.add(cbDatiFatturaTipologia);
@@ -223,6 +225,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		pnDatiFattura.add(lblAcquisitore);
 		
 		cbDatiFatturaAcquisitore = new JComboBox<String>();
+		fillComboBox(cbDatiFatturaAcquisitore, "Cognome", "Personale");
 		cbDatiFatturaAcquisitore.setBackground(new Color(224, 255, 255));
 		cbDatiFatturaAcquisitore.setBounds(142, 230, 146, 20);
 		pnDatiFattura.add(cbDatiFatturaAcquisitore);
@@ -244,6 +247,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		pnDatiFattura.add(lblVenditore);
 		
 		cbDatiFatturaVenditore = new JComboBox<String>();
+		fillComboBox(cbDatiFatturaVenditore, "Cognome", "Personale");
 		cbDatiFatturaVenditore.setBackground(new Color(224, 255, 255));
 		cbDatiFatturaVenditore.setBounds(142, 310, 146, 20);
 		pnDatiFattura.add(cbDatiFatturaVenditore);
@@ -290,6 +294,37 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		LoadTable();
 		
 		table.setRowHeight(25);
+		
+//		set field by click row
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					int row = table.getSelectedRow();
+					String numeroFattura = (table.getModel().getValueAt(row, 0)).toString();
+					String query = "select * from Fattura where NumeroFattura='"+numeroFattura+"'";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					while(rs.next()) {
+						tfDatiFatturaNumero.setText(rs.getString("NumeroFattura").toString());
+						tfDatiFatturaData.setText(rs.getString("DataFattura"));
+						tfDatiFatturaIndirizzo.setText(rs.getString("IndirizzoImmobile"));
+						
+						cbDatiFatturaTipologia.setSelectedItem((String)rs.getString("Tipologia"));
+						tfDatiFatturaImporto.setText(rs.getString("Importo"));
+						
+						cbDatiFatturaAcquisitore.setSelectedItem((String)rs.getString("Acquisitore"));
+						tfDatiFatturaProvvA.setText(rs.getString("ProvvigioniAcquisitore"));
+						
+						cbDatiFatturaVenditore.setSelectedItem((String)rs.getString("Venditore"));
+						tfDatiFatturaProvvV.setText(rs.getString("ProvvigioniVenditore"));
+					}
+					pst.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				} 
+			}
+		});
 		
 		scrollPane.setViewportView(table);
 		
@@ -1049,6 +1084,24 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/*
+	 * carica valori da database in combobox
+	 */
+	private void fillComboBox(JComboBox<String> comboBox, String parameterColumn, String nameTable) {
+		comboBox.addItem("..:: Scegli ::..");
+		try {
+			String query = "select * from "+nameTable;
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next()) {
+				comboBox.addItem(rs.getString(parameterColumn));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 
