@@ -27,6 +27,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
@@ -265,6 +266,27 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 		// btn update e svuota campi
 		JButton btnModificaDatiFattura = new JButton("Modifica");
+		btnModificaDatiFattura.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					String query = "Update Fattura set " + 
+									"DataFattura='"+tfDatiFatturaData.getText()+"', IndirizzoImmobile='"+tfDatiFatturaIndirizzo.getText() + 
+									"', Tipologia='"+(String)cbDatiFatturaTipologia.getSelectedItem() + "', Importo='"+tfDatiFatturaImporto.getText() + 
+									"', Acquisitore='"+(String)cbDatiFatturaAcquisitore.getSelectedItem() + "', ProvvigioniAcquisitore='"+tfDatiFatturaProvvA.getText() +
+									"', Venditore='"+(String)cbDatiFatturaVenditore.getSelectedItem() + "', ProvvigioniVenditore='"+tfDatiFatturaProvvV.getText() +
+									"' where NumeroFattura='"+tfDatiFatturaNumero.getText()+"'";
+					PreparedStatement pst = connection.prepareStatement(query);
+					pst.execute();
+					JOptionPane.showMessageDialog(null, "Fattura aggiornata correttamente");
+					pst.close();
+					setColumnsName();
+					runCheck();
+//					clearTextFields();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 		btnModificaDatiFattura.setBounds(12, 398, 128, 20);
 		Image imgModificaDati = new ImageIcon(this.getClass().getResource("/updateDatiFattura.png")).getImage();
 		btnModificaDatiFattura.setIcon(new ImageIcon(imgModificaDati));
@@ -309,36 +331,8 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		table.setRowHeight(25);
 		
 //		set field by click row
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				try {
-					int row = table.getSelectedRow();
-					String numeroFattura = (table.getModel().getValueAt(row, 0)).toString();
-					String query = "select * from Fattura where NumeroFattura='"+numeroFattura+"'";
-					PreparedStatement pst = connection.prepareStatement(query);
-					ResultSet rs = pst.executeQuery();
-					while(rs.next()) {
-						tfDatiFatturaNumero.setText(rs.getString("NumeroFattura").toString());
-						tfDatiFatturaData.setText(rs.getString("DataFattura"));
-						tfDatiFatturaIndirizzo.setText(rs.getString("IndirizzoImmobile"));
-						
-						cbDatiFatturaTipologia.setSelectedItem((String)rs.getString("Tipologia"));
-						tfDatiFatturaImporto.setText(rs.getString("Importo"));
-						
-						cbDatiFatturaAcquisitore.setSelectedItem((String)rs.getString("Acquisitore"));
-						tfDatiFatturaProvvA.setText(rs.getString("ProvvigioniAcquisitore"));
-						
-						cbDatiFatturaVenditore.setSelectedItem((String)rs.getString("Venditore"));
-						tfDatiFatturaProvvV.setText(rs.getString("ProvvigioniVenditore"));
-					}
-					pst.close();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				} 
-			}
-		});
-		
+//		tableClickRow();
+
 		scrollPane.setViewportView(table);
 		
 		
@@ -866,6 +860,9 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			pst.close();
 			rs.close();
 			
+//			set field by click row
+			tableClickRow();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -952,6 +949,9 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			
 			pst.close();
 			rs.close();
+			
+//			set field by click row
+			tableClickRow();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1043,6 +1043,9 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			pst.close();
 			rs.close();
 			
+//			set field by click row
+			tableClickRow();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1117,7 +1120,39 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 	}
 
-
+	
+	public void tableClickRow() {
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					int row = table.getSelectedRow();
+					String numeroFattura = (table.getModel().getValueAt(row, 0)).toString();
+					String query = "select * from Fattura where NumeroFattura='"+numeroFattura+"'";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					while(rs.next()) {
+						tfDatiFatturaNumero.setText(rs.getString("NumeroFattura").toString());
+						tfDatiFatturaData.setText(rs.getString("DataFattura"));
+						tfDatiFatturaIndirizzo.setText(rs.getString("IndirizzoImmobile"));
+						
+						cbDatiFatturaTipologia.setSelectedItem((String)rs.getString("Tipologia"));
+						tfDatiFatturaImporto.setText(rs.getString("Importo"));
+						
+						cbDatiFatturaAcquisitore.setSelectedItem((String)rs.getString("Acquisitore"));
+						tfDatiFatturaProvvA.setText(rs.getString("ProvvigioniAcquisitore"));
+						
+						cbDatiFatturaVenditore.setSelectedItem((String)rs.getString("Venditore"));
+						tfDatiFatturaProvvV.setText(rs.getString("ProvvigioniVenditore"));
+					}
+					pst.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				} 
+			}
+		});
+	}
+	
 }
 
 
