@@ -271,6 +271,19 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		pnDatiFattura.add(btnModificaDatiFattura);
 		
 		JButton btnClearDatiFattura = new JButton("Clear");
+		btnClearDatiFattura.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tfDatiFatturaNumero.setText("");
+				tfDatiFatturaData.setText("");
+				tfDatiFatturaIndirizzo.setText("");
+				cbDatiFatturaTipologia.setSelectedIndex(0);
+				tfDatiFatturaImporto.setText("");
+				cbDatiFatturaAcquisitore.setSelectedIndex(0);
+				tfDatiFatturaProvvA.setText("");
+				cbDatiFatturaVenditore.setSelectedIndex(0);
+				tfDatiFatturaProvvV.setText("");
+			}
+		});
 		btnClearDatiFattura.setBounds(160, 398, 128, 20);
 		Image imgClearDati = new ImageIcon(this.getClass().getResource("/clearDatiFattura.png")).getImage();
 		btnClearDatiFattura.setIcon(new ImageIcon(imgClearDati));
