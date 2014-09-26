@@ -57,15 +57,27 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private ImagePanel pnDatiFattura;
 	private ImagePanel pnCheckboxFattura;
 	private ImagePanel pnSearchForImportFattura;
+	private ImagePanel pnInsertFattura;
 	
 	private JTextField tfDatiFatturaNumero;
 	private JTextField tfDatiFatturaData;
+	private JTextField tfDatiFatturaIndirizzo;
 	private JComboBox<String> cbDatiFatturaTipologia;
 	private JTextField tfDatiFatturaImporto;
 	private JComboBox<String> cbDatiFatturaAcquisitore;
 	private JTextField tfDatiFatturaProvvA;
 	private JComboBox<String> cbDatiFatturaVenditore;
 	private JTextField tfDatiFatturaProvvV;
+	
+	private JTextField tfDatiFatturaNumeroIns;
+	private JTextField tfDatiFatturaDataIns;
+	private JTextField tfDatiFatturaIndirizzoIns;
+	private JComboBox<String> cbDatiFatturaTipologiaIns;
+	private JTextField tfDatiFatturaImportoIns;
+	private JComboBox<String> cbDatiFatturaAcquisitoreIns;
+	private JTextField tfDatiFatturaProvvAIns;
+	private JComboBox<String> cbDatiFatturaVenditoreIns;
+	private JTextField tfDatiFatturaProvvVIns;
 	
 	private boolean boolData = true, boolIndirizzo = true, boolTipologia = true, boolImporto = true, boolAcquisitore = true, boolProvvA = true, boolVenditore = true, boolProvvV = true;
 	private String[] strNameColumns;
@@ -89,7 +101,6 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private int maxSlider = 0;
 	private JLabel lblMinimo;
 	private JLabel lblMassimo;
-	private JTextField tfDatiFatturaIndirizzo;
 	
 	/**
 	 * Create the panel.
@@ -135,6 +146,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		btnPlusCollapseDati.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				pnDatiFattura.setSize(300, 430);
+				pnInsertFattura.setBounds(20, pnDatiFattura.getHeight() + 40, 300, pnInsertFattura.getHeight());
 				pnDatiFattura.revalidate();
 				pnDatiFattura.repaint();
 			}
@@ -149,6 +161,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		btnMinusCollapseDati.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnDatiFattura.setSize(300, 40);
+				pnInsertFattura.setBounds(20, pnDatiFattura.getHeight() + 40, 300, pnInsertFattura.getHeight());
 				pnDatiFattura.revalidate();
 				pnDatiFattura.repaint();
 			}
@@ -314,6 +327,155 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 		leftPanel.add(pnDatiFattura);
 		
+		// pannello inserimento Fattura
+		pnInsertFattura = new ImagePanel(new ImageIcon("images/sfondo.jpg").getImage());
+		pnInsertFattura.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
+		pnInsertFattura.setLayout(null);
+		pnInsertFattura.setBounds(20, 470, 300, 430);
+		
+		// titolo pannello
+		JLabel lblInserimentoFattura = new JLabel("Inserimento nuova Fattura");
+		lblInserimentoFattura.setForeground(new Color(255, 255, 255));
+		lblInserimentoFattura.setFont(new Font("Ubuntu", Font.BOLD, 15));
+		lblInserimentoFattura.setBounds(12, 12, 200, 20);
+		pnInsertFattura.add(lblInserimentoFattura);
+		
+		// btn plus collapse
+		JButton btnPlusCollapseInserimento = new JButton();
+		btnPlusCollapseInserimento.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				pnInsertFattura.setSize(300, 430);
+				pnInsertFattura.revalidate();
+				pnInsertFattura.repaint();
+			}
+		});
+		btnPlusCollapseInserimento.setBounds(236, 12, 20, 20);
+		Image imgPlusCollapseInserimento = new ImageIcon(this.getClass().getResource("/plusCollapse.png")).getImage();
+		btnPlusCollapseInserimento.setIcon(new ImageIcon(imgPlusCollapseInserimento));
+		pnInsertFattura.add(btnPlusCollapseInserimento);
+		
+		// btn minus collapse
+		JButton btnMinusCollapseInserimento = new JButton();
+		btnMinusCollapseInserimento.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnInsertFattura.setSize(300, 40);
+				pnInsertFattura.revalidate();
+				pnInsertFattura.repaint();
+			}
+		});
+		btnMinusCollapseInserimento.setBounds(268, 12, 20, 20);
+		Image imgMinusCollapseInserimento = new ImageIcon(this.getClass().getResource("/minusCollapse.png")).getImage();
+		btnMinusCollapseInserimento.setIcon(new ImageIcon(imgMinusCollapseInserimento));
+		pnInsertFattura.add(btnMinusCollapseInserimento);
+		
+		// separatore testata - dati
+		JSeparator separatorInserimento = new JSeparator();
+		separatorInserimento.setBackground(new Color(255, 255, 255));
+		separatorInserimento.setBounds(12, 47, 276, 2);
+		pnInsertFattura.add(separatorInserimento);
+		
+		// dati
+		JLabel lblNumeroIns = new JLabel("Numero");
+		lblNumeroIns.setForeground(new Color(255, 255, 255));
+		lblNumeroIns.setBounds(12, 70, 70, 15);
+		pnInsertFattura.add(lblNumeroIns);
+		
+		tfDatiFatturaNumeroIns = new JTextField();
+		tfDatiFatturaNumeroIns.setBackground(new Color(224, 255, 255));
+		tfDatiFatturaNumeroIns.setBounds(81, 68, 43, 20);
+		pnInsertFattura.add(tfDatiFatturaNumeroIns);
+		tfDatiFatturaNumeroIns.setColumns(10);
+		
+		JLabel lblDataIns = new JLabel("Data");
+		lblDataIns.setForeground(new Color(255, 255, 255));
+		lblDataIns.setBounds(142, 70, 43, 15);
+		pnInsertFattura.add(lblDataIns);
+		
+		tfDatiFatturaDataIns = new JTextField();
+		tfDatiFatturaDataIns.setBackground(new Color(224, 255, 255));
+		tfDatiFatturaDataIns.setBounds(192, 68, 96, 20);
+		pnInsertFattura.add(tfDatiFatturaDataIns);
+		tfDatiFatturaDataIns.setColumns(10);
+		
+		JLabel lblIndirizzoImmobileIns = new JLabel("Indirizzo");
+		lblIndirizzoImmobileIns.setForeground(new Color(255, 255, 255));
+		lblIndirizzoImmobileIns.setBounds(12, 110, 139, 15);
+		pnInsertFattura.add(lblIndirizzoImmobileIns);
+		
+		tfDatiFatturaIndirizzoIns = new JTextField();
+		tfDatiFatturaIndirizzoIns.setBackground(new Color(224, 255, 255));
+		tfDatiFatturaIndirizzoIns.setBounds(142, 110, 146, 20);
+		pnInsertFattura.add(tfDatiFatturaIndirizzoIns);
+		tfDatiFatturaIndirizzoIns.setColumns(10);
+		
+		JLabel lblTipologiaIns = new JLabel("Tipologia");
+		lblTipologiaIns.setForeground(new Color(255, 255, 255));
+		lblTipologiaIns.setBounds(12, 150, 70, 15);
+		pnInsertFattura.add(lblTipologiaIns);
+		
+		cbDatiFatturaTipologiaIns = new JComboBox<String>();
+		fillComboBox(cbDatiFatturaTipologiaIns, "Tipo", "Tipologia");
+		cbDatiFatturaTipologiaIns.setBackground(new Color(224, 255, 255));
+		cbDatiFatturaTipologiaIns.setBounds(142, 150, 146, 20);
+		pnInsertFattura.add(cbDatiFatturaTipologiaIns);
+		
+		JLabel lblImportoIns = new JLabel("Importo");
+		lblImportoIns.setForeground(new Color(255, 255, 255));
+		lblImportoIns.setBounds(12, 190, 70, 15);
+		pnInsertFattura.add(lblImportoIns);
+		
+		tfDatiFatturaImportoIns = new JTextField();
+		tfDatiFatturaImportoIns.setBackground(new Color(224, 255, 255));
+		tfDatiFatturaImportoIns.setBounds(142, 190, 146, 20);
+		pnInsertFattura.add(tfDatiFatturaImportoIns);
+		tfDatiFatturaImportoIns.setColumns(10);
+		
+		JLabel lblAcquisitoreIns = new JLabel("Acquisitore");
+		lblAcquisitoreIns.setForeground(new Color(255, 255, 255));
+		lblAcquisitoreIns.setBounds(12, 230, 87, 15);
+		pnInsertFattura.add(lblAcquisitoreIns);
+		
+		cbDatiFatturaAcquisitoreIns = new JComboBox<String>();
+		fillComboBox(cbDatiFatturaAcquisitoreIns, "Cognome", "Personale");
+		cbDatiFatturaAcquisitoreIns.setBackground(new Color(224, 255, 255));
+		cbDatiFatturaAcquisitoreIns.setBounds(142, 230, 146, 20);
+		pnInsertFattura.add(cbDatiFatturaAcquisitoreIns);
+		
+		JLabel lblProvvAIns = new JLabel("Provv A");
+		lblProvvAIns.setForeground(new Color(255, 255, 255));
+		lblProvvAIns.setBounds(12, 270, 70, 15);
+		pnInsertFattura.add(lblProvvAIns);
+		
+		tfDatiFatturaProvvAIns = new JTextField();
+		tfDatiFatturaProvvAIns.setBackground(new Color(224, 255, 255));
+		tfDatiFatturaProvvAIns.setBounds(142, 270, 146, 20);
+		pnInsertFattura.add(tfDatiFatturaProvvAIns);
+		tfDatiFatturaProvvAIns.setColumns(10);
+		
+		JLabel lblVenditoreIns = new JLabel("Venditore");
+		lblVenditoreIns.setForeground(new Color(255, 255, 255));
+		lblVenditoreIns.setBounds(12, 310, 70, 15);
+		pnInsertFattura.add(lblVenditoreIns);
+		
+		cbDatiFatturaVenditore = new JComboBox<String>();
+		fillComboBox(cbDatiFatturaVenditore, "Cognome", "Personale");
+		cbDatiFatturaVenditore.setBackground(new Color(224, 255, 255));
+		cbDatiFatturaVenditore.setBounds(142, 310, 146, 20);
+		pnInsertFattura.add(cbDatiFatturaVenditore);
+		
+		JLabel lblProvvVIns = new JLabel("Provv V");
+		lblProvvVIns.setForeground(new Color(255, 255, 255));
+		lblProvvVIns.setBounds(12, 350, 70, 15);
+		pnInsertFattura.add(lblProvvVIns);
+		
+		tfDatiFatturaProvvVIns = new JTextField();
+		tfDatiFatturaProvvVIns.setBackground(new Color(224, 255, 255));
+		tfDatiFatturaProvvVIns.setBounds(142, 350, 146, 20);
+		pnInsertFattura.add(tfDatiFatturaProvvVIns);
+		tfDatiFatturaProvvVIns.setColumns(10);
+		
+		leftPanel.add(pnInsertFattura);
+		
 		leftPanel.setPreferredSize(new Dimension(350, 400));
 		add(leftPanel, BorderLayout.LINE_START);
 		
@@ -330,8 +492,24 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 		table.setRowHeight(25);
 		
-//		set field by click row
-//		tableClickRow();
+//		order table by click column
+		table.getTableHeader().addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		    	int col = table.columnAtPoint(e.getPoint());
+		    	String nameColumn = table.getColumnName(col);
+		    	if(nameColumn.equals("DataFattura")) {
+	    			nameColumn = "datetime(DataFattura)"; 
+	    		}
+		    	if (e.getClickCount() == 1) {
+			    	//orderTable(nameColumn, "ASC");
+		    		System.out.println("un click");
+		    	} else if(e.getClickCount() == 2) {
+		    		//orderTable(nameColumn, "DESC");
+		    		System.out.println("due click");
+		    	}
+		    }
+		});
 
 		scrollPane.setViewportView(table);
 		
@@ -791,6 +969,23 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	}
 	
 	/*
+	 * creazione query da selezione e ordinamento
+	 */
+	private String getQuery(String tipo) {
+		String query = "select NumeroFattura ";
+		if(boolData) query+=", DataFattura";
+		if(boolIndirizzo) query+=", IndirizzoImmobile";
+		if(boolTipologia) query+=", Tipologia";
+		if(boolImporto) query+=", Importo";
+		if(boolAcquisitore) query+=", Acquisitore";
+		if(boolProvvA) query+=", ProvvigioniAcquisitore";
+		if(boolVenditore) query+=", Venditore";
+		if(boolProvvV) query+=", ProvvigioniVenditore";
+		query+=" from Fattura";
+		return query;
+	}
+	
+	/*
 	 * verifica se la colonna è presente in tabella
 	 */
 	private boolean isPresent(String colonna) {
@@ -882,6 +1077,98 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	        table.setModel(model);
 	        
 	        String query = getQuery();
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00");
+			
+			while(rs.next()) {
+				
+				List<Object> row = new ArrayList<Object>();
+								
+				row.add(rs.getString("NumeroFattura"));
+				
+				if(isPresent("DataFattura"))
+					row.add(rs.getString("DataFattura"));
+				if(isPresent("IndirizzoImmobile"))
+					row.add(rs.getString("IndirizzoImmobile"));
+				if(isPresent("Tipologia"))
+					row.add(rs.getString("Tipologia"));
+				if(isPresent("Importo")) {
+					row.add(f.format(rs.getDouble("Importo")));
+					totaleImporto+=rs.getDouble("Importo");
+				}
+				if(isPresent("Acquisitore"))
+					row.add(rs.getString("Acquisitore"));
+				if(isPresent("ProvvigioniAcquisitore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
+					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
+				}
+				if(isPresent("Venditore"))
+					row.add(rs.getString("Venditore"));
+				if(isPresent("ProvvigioniVenditore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
+					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
+				}
+				
+				model.addRow(row.toArray());
+				
+				
+			}
+			
+			List<Object> finalRow = new ArrayList<Object>();
+			
+			finalRow.add("TOTALE");
+			if(isPresent("DataFattura"))
+				finalRow.add("");
+			if(isPresent("IndirizzoImmobile"))
+				finalRow.add("");
+			if(isPresent("Tipologia"))
+				finalRow.add("");
+			if(isPresent("Importo"))
+				finalRow.add(f.format(totaleImporto));
+			if(isPresent("Acquisitore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniAcquisitore"))
+				finalRow.add(f.format(totaleProvvAcq));
+			if(isPresent("Venditore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniVenditore"))
+				finalRow.add(f.format(totaleProvvVen));
+			
+			model.addRow(finalRow.toArray());
+			
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
+			table.setRowHeight(25);
+			
+			pst.close();
+			rs.close();
+			
+//			set field by click row
+			tableClickRow();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		scrollPane.setViewportView(table);
+        
+	}
+	
+	/*
+	 * creazione tabella
+	 */
+	private void printTable(String tipo) {
+
+		scrollPane.getViewport().remove(table);
+		try {
+			
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(strNameColumns);
+			table = new JTable();
+	        table.setModel(model);
+	        
+	        String query = getQuery(tipo);
 			PreparedStatement pst = connection.prepareStatement(query);
 			ResultSet rs = pst.executeQuery();
 			
@@ -1120,7 +1407,9 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 	}
 
-	
+	/*
+	 * select row in table
+	 */
 	public void tableClickRow() {
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -1152,6 +1441,9 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			}
 		});
 	}
+	
+	
+	
 	
 }
 
