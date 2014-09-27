@@ -10,7 +10,9 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import utility.AlphaTableRender;
 
@@ -18,10 +20,15 @@ import javax.swing.JCheckBox;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 import javax.swing.JSlider;
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -291,7 +298,6 @@ public class proveTable extends JPanel {
 	 */
 	private void LoadTable() {
 		try {
-			
 			DefaultTableModel model = new DefaultTableModel();
 			model.setColumnIdentifiers(getColumnNames());
 			table = new JTable();
@@ -342,6 +348,9 @@ public class proveTable extends JPanel {
 			model.addRow(new Object[] {"Totale", "", "", "", f.format(totaleImporto), "", f.format(totaleProvvAcq), "", f.format(totaleProvvVen)});
 			
 			table.setDefaultRenderer(Object.class, new AlphaTableRender());
+					
+			table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 50));
+			table.getTableHeader().setBackground(new Color(240, 235, 135));
 			
 			pst.close();
 			rs.close();
@@ -712,13 +721,7 @@ public class proveTable extends JPanel {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
 }
+
+
 

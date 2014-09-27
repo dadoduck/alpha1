@@ -1,11 +1,14 @@
 package utility;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
@@ -44,6 +47,16 @@ public class AlphaTableRender implements TableCellRenderer {
         		(table.getColumnName(column).equals("ProvvigioniAcquisitore")) ||
         		(table.getColumnName(column).equals("ProvvigioniVenditore"))) {
         	text.setBorder(new EmptyBorder(0, 0, 0, 7) );
+        }
+        
+        if(row %2 == 0) { 
+        	text.setOpaque(true);
+        	text.setBackground(new Color(255, 254, 225));
+        }
+        
+        if(isSelected && row!=table.getRowCount()-1) {
+        	text.setOpaque(true);
+        	text.setBackground(new Color(234, 234, 234));
         }
         	
         return text;
