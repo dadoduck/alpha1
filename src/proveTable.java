@@ -7,6 +7,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,6 +24,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JSlider;
 import javax.swing.JLabel;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
@@ -233,8 +235,6 @@ public class proveTable extends JPanel {
 		lblTextValoreMassimoSlider = new JLabel("Importo massimo:");
 		lblTextValoreMassimoSlider.setBounds(612, 552, 215, 23);
 		add(lblTextValoreMassimoSlider);
-		
-		
 		
 	}
 	
@@ -719,8 +719,6 @@ public class proveTable extends JPanel {
 		System.out.println("Provvigioni Venditore: " + provvV);
 		System.out.println("################################");
 	}
-	
-	
 }
 
 

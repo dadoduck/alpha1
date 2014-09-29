@@ -39,6 +39,7 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 
+import utility.AlphaPanel;
 import utility.AlphaTableRender;
 
 import javax.swing.JSlider;
@@ -46,6 +47,7 @@ import javax.swing.JSlider;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.SystemColor;
+
 import javax.swing.SwingConstants;
 
 
@@ -66,10 +68,10 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private boolean closedRightPanel = false;
 	JButton btnCollapseRightPanel;
 	
-	private ImagePanel pnDatiFattura;
-	private ImagePanel pnCheckboxFattura;
-	private ImagePanel pnSearchForImportFattura;
-	private ImagePanel pnInsertFattura;
+	private AlphaPanel pnDatiFattura;
+	private AlphaPanel pnCheckboxFattura;
+	private AlphaPanel pnSearchForImportFattura;
+	private AlphaPanel pnInsertFattura;
 	
 	private JTextField tfDatiFatturaNumero;
 	private JTextField tfDatiFatturaData;
@@ -141,55 +143,33 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		leftPanel = new JPanel();
 		leftPanel.setLayout(null);
 		
-		// pannello con i dati della fattura
+		// ********** pannello Modifica fattura
 		
-		pnDatiFattura = new ImagePanel(new ImageIcon("images/sfondo.jpg").getImage());
-		pnDatiFattura.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
-		pnDatiFattura.setLayout(null);
-		pnDatiFattura.setBounds(30, 0, 300, 430);
+		pnDatiFattura = new AlphaPanel("images/sfondo.jpg", "Modifica Fattura Selezionata", 30, 0, 300, 430);
 		
-		// titolo pannello
-		JLabel lblDatiFatturaSelezionata = new JLabel("Modifica Fattura Selezionata");
-		lblDatiFatturaSelezionata.setForeground(new Color(255, 255, 255));
-		lblDatiFatturaSelezionata.setFont(new Font("Ubuntu", Font.BOLD, 15));
-		lblDatiFatturaSelezionata.setBounds(12, 12, 219, 20);
-		pnDatiFattura.add(lblDatiFatturaSelezionata);
-		
-		// btn plus collapse
-		JButton btnPlusCollapseDati = new JButton();
-		btnPlusCollapseDati.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				pnDatiFattura.setSize(300, 430);
-				pnInsertFattura.setBounds(30, pnDatiFattura.getHeight() + 20, 300, 40);
-				pnDatiFattura.revalidate();
-				pnDatiFattura.repaint();
-			}
-		});
-		btnPlusCollapseDati.setBounds(236, 12, 20, 20);
-		Image imgPlusCollapseDati = new ImageIcon(this.getClass().getResource("/plusCollapse.png")).getImage();
-		btnPlusCollapseDati.setIcon(new ImageIcon(imgPlusCollapseDati));
-		pnDatiFattura.add(btnPlusCollapseDati);
-		
-		// btn minus collapse
-		JButton btnMinusCollapseDati = new JButton();
-		btnMinusCollapseDati.addActionListener(new ActionListener() {
+		// button collapse Minus pnDatiFattura 
+		ActionListener pnDatiFatturaLisMinus = new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				pnDatiFattura.setSize(300, 40);
 				pnInsertFattura.setBounds(30, pnDatiFattura.getHeight() + 20, 300, pnInsertFattura.getHeight());
 				pnDatiFattura.revalidate();
 				pnDatiFattura.repaint();
 			}
-		});
-		btnMinusCollapseDati.setBounds(268, 12, 20, 20);
-		Image imgMinusCollapseDati = new ImageIcon(this.getClass().getResource("/minusCollapse.png")).getImage();
-		btnMinusCollapseDati.setIcon(new ImageIcon(imgMinusCollapseDati));
-		pnDatiFattura.add(btnMinusCollapseDati);
+		};
+		pnDatiFattura.setBtnCollapseMinus(pnDatiFatturaLisMinus);
 		
-		// separatore testata - dati
-		JSeparator separator = new JSeparator();
-		separator.setBackground(new Color(255, 255, 255));
-		separator.setBounds(12, 47, 276, 2);
-		pnDatiFattura.add(separator);
+		// button collapse Minus pnDatiFattura
+		ActionListener pnDatiFatturaLisPlus = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pnDatiFattura.setSize(300, 430);
+				pnInsertFattura.setBounds(30, pnDatiFattura.getHeight() + 20, 300, 40);
+				pnDatiFattura.revalidate();
+				pnDatiFattura.repaint();
+			}
+		};
+		pnDatiFattura.setBtnCollapsePlus(pnDatiFatturaLisPlus);
 		
 		// dati
 		JLabel lblNumero = new JLabel("Numero");
@@ -339,56 +319,36 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		btnClearDatiFattura.setIcon(new ImageIcon(imgClearDati));
 		pnDatiFattura.add(btnClearDatiFattura);
 		
-		
 		leftPanel.add(pnDatiFattura);
 		
-		// pannello inserimento Fattura
-		pnInsertFattura = new ImagePanel(new ImageIcon("images/sfondo.jpg").getImage());
-		pnInsertFattura.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
-		pnInsertFattura.setLayout(null);
-		pnInsertFattura.setBounds(30, 450, 300, 40);
 		
-		// titolo pannello
-		JLabel lblInserimentoFattura = new JLabel("Inserimento nuova Fattura");
-		lblInserimentoFattura.setForeground(new Color(255, 255, 255));
-		lblInserimentoFattura.setFont(new Font("Ubuntu", Font.BOLD, 15));
-		lblInserimentoFattura.setBounds(12, 12, 200, 20);
-		pnInsertFattura.add(lblInserimentoFattura);
 		
-		// btn plus collapse
-		JButton btnPlusCollapseInserimento = new JButton();
-		btnPlusCollapseInserimento.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				pnDatiFattura.setSize(300, 40);
-				pnInsertFattura.setBounds(30, pnDatiFattura.getHeight() + 20, 300, 430);
-				pnInsertFattura.revalidate();
-				pnInsertFattura.repaint();
-			}
-		});
-		btnPlusCollapseInserimento.setBounds(236, 12, 20, 20);
-		Image imgPlusCollapseInserimento = new ImageIcon(this.getClass().getResource("/plusCollapse.png")).getImage();
-		btnPlusCollapseInserimento.setIcon(new ImageIcon(imgPlusCollapseInserimento));
-		pnInsertFattura.add(btnPlusCollapseInserimento);
+		// ********** pannello Inserimento fattura
 		
-		// btn minus collapse
-		JButton btnMinusCollapseInserimento = new JButton();
-		btnMinusCollapseInserimento.addActionListener(new ActionListener() {
+		pnInsertFattura = new AlphaPanel("images/sfondo.jpg", "Inserimento nuova Fattura", 30, 450, 300, 40);
+		
+		// button collapse Minus pnInsertFattura 
+		ActionListener pnInsertFatturaLisMinus = new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				pnInsertFattura.setSize(300, 40);
 				pnInsertFattura.revalidate();
 				pnInsertFattura.repaint();
 			}
-		});
-		btnMinusCollapseInserimento.setBounds(268, 12, 20, 20);
-		Image imgMinusCollapseInserimento = new ImageIcon(this.getClass().getResource("/minusCollapse.png")).getImage();
-		btnMinusCollapseInserimento.setIcon(new ImageIcon(imgMinusCollapseInserimento));
-		pnInsertFattura.add(btnMinusCollapseInserimento);
+		};
+		pnInsertFattura.setBtnCollapseMinus(pnInsertFatturaLisMinus);
 		
-		// separatore testata - dati
-		JSeparator separatorInserimento = new JSeparator();
-		separatorInserimento.setBackground(new Color(255, 255, 255));
-		separatorInserimento.setBounds(12, 47, 276, 2);
-		pnInsertFattura.add(separatorInserimento);
+		// button collapse Minus pnInsertFattura 
+		ActionListener pnInsertFatturaLisPlus = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pnDatiFattura.setSize(300, 40);
+				pnInsertFattura.setBounds(30, pnDatiFattura.getHeight() + 20, 300, 430);
+				pnInsertFattura.revalidate();
+				pnInsertFattura.repaint();
+			}
+		};
+		pnInsertFattura.setBtnCollapsePlus(pnInsertFatturaLisPlus);
 		
 		// dati
 		JLabel lblNumeroIns = new JLabel("Numero");
@@ -546,7 +506,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		leftPanel.setPreferredSize(new Dimension(350, 400));
 		add(leftPanel, BorderLayout.LINE_START);
 		
-		// button chiusura left panel
+		// Dimensione Left Panel & Collapse
 		btnCollapseLeftPanel = new JButton("");
 		btnCollapseLeftPanel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -610,59 +570,35 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		rightPanel = new JPanel();
 		rightPanel.setLayout(null);
 		
-		// *************** pannello con i dati della fattura
+		// ********** pannello Checkbox fattura
 		
-		pnCheckboxFattura = new ImagePanel(new ImageIcon("images/sfondo.jpg").getImage());
-		pnCheckboxFattura.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
-		pnCheckboxFattura.setLayout(null);
-		pnCheckboxFattura.setBounds(20, 0, 300, 260);
+		pnCheckboxFattura = new AlphaPanel("images/sfondo.jpg", "Colonne visualizzate", 20, 0, 300, 260);
 		
-		// titolo pannello
-		JLabel lblCheckboxFattura = new JLabel("Colonne visualizzate");
-		lblCheckboxFattura.setForeground(new Color(255, 255, 255));
-		lblCheckboxFattura.setFont(new Font("Ubuntu", Font.BOLD, 15));
-		lblCheckboxFattura.setBounds(12, 12, 184, 20);
-		pnCheckboxFattura.add(lblCheckboxFattura);
-		
-		// btn plus collapse
-		JButton btnPlusCollapseCheck = new JButton();
-		btnPlusCollapseCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				pnCheckboxFattura.setSize(300, 260);
-				pnSearchForImportFattura.setBounds(20, pnCheckboxFattura.getHeight() + 20, 300, pnSearchForImportFattura.getHeight());
-				rightPanel.revalidate();
-				rightPanel.repaint();
-			}
-		});
-		btnPlusCollapseCheck.setBounds(236, 12, 20, 20);
-		Image imgPlusCollapseCheck = new ImageIcon(this.getClass().getResource("/plusCollapse.png")).getImage();
-		btnPlusCollapseCheck.setIcon(new ImageIcon(imgPlusCollapseCheck));
-		pnCheckboxFattura.add(btnPlusCollapseCheck);
-		
-		// btn minus collapse
-		JButton btnMinusCollapseCheck = new JButton();
-		btnMinusCollapseCheck.addActionListener(new ActionListener() {
+		// button collapse Minus pnCheckboxFattura 
+		ActionListener pnCheckboxFatturaLisMinus = new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				pnCheckboxFattura.setSize(300, 40);
 				pnSearchForImportFattura.setBounds(20, pnCheckboxFattura.getHeight() + 20, 300, pnSearchForImportFattura.getHeight());
 				rightPanel.revalidate();
 				rightPanel.repaint();
 			}
-		});
-		btnMinusCollapseCheck.setBounds(268, 12, 20, 20);
-		Image imgMinusCollapseCheck = new ImageIcon(this.getClass().getResource("/minusCollapse.png")).getImage();
-		btnMinusCollapseCheck.setIcon(new ImageIcon(imgMinusCollapseCheck));
-		pnCheckboxFattura.add(btnMinusCollapseCheck);
+		};
+		pnCheckboxFattura.setBtnCollapseMinus(pnCheckboxFatturaLisMinus);
 		
-		// separatore testata - dati
-		JSeparator separatorCollapseCheck = new JSeparator();
-		separatorCollapseCheck.setBackground(new Color(255, 255, 255));
-		separatorCollapseCheck.setBounds(12, 47, 276, 2);
-		pnCheckboxFattura.add(separatorCollapseCheck);
-		
+		// button collapse Minus pnInsertFattura 
+		ActionListener pnCheckboxFatturaLisPlus = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pnCheckboxFattura.setSize(300, 260);
+				pnSearchForImportFattura.setBounds(20, pnCheckboxFattura.getHeight() + 20, 300, pnSearchForImportFattura.getHeight());
+				rightPanel.revalidate();
+				rightPanel.repaint();
+			}
+		};
+		pnCheckboxFattura.setBtnCollapsePlus(pnCheckboxFatturaLisPlus);
 
-		rightPanel.add(pnCheckboxFattura);
-		
+		// dati		
 		chckbxData = new JCheckBox("Data", true);
 		chckbxData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -767,58 +703,36 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		chckbxProvvV.setOpaque(false);
 		pnCheckboxFattura.add(chckbxProvvV);
 		
+		rightPanel.add(pnCheckboxFattura);
 		
 		
-		// *************** pannello selezione importo
+		// ********** pannello Slider Importo fattura
 		
-		pnSearchForImportFattura = new ImagePanel(new ImageIcon("images/sfondo.jpg").getImage());
-		pnSearchForImportFattura.setBorder(new LineBorder(new Color(0, 0, 0), 2, true));
-		pnSearchForImportFattura.setLayout(null);
-		pnSearchForImportFattura.setBounds(20, 283, 300, 245);  // da controllare
-				
-		// titolo pannello
-		JLabel lblSearchForImportFattura = new JLabel("Filtra per importo");
-		lblSearchForImportFattura.setForeground(new Color(255, 255, 255));
-		lblSearchForImportFattura.setFont(new Font("Ubuntu", Font.BOLD, 15));
-		lblSearchForImportFattura.setBounds(12, 12, 184, 20);
-		pnSearchForImportFattura.add(lblSearchForImportFattura);
+		pnSearchForImportFattura = new AlphaPanel("images/sfondo.jpg", "Filtra per importo", 20, 280, 300, 245);
 		
-		// btn plus collapse
-		JButton btnPlusCollapseSearch = new JButton();
-		btnPlusCollapseSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				pnSearchForImportFattura.setSize(300, 245);
-				pnSearchForImportFattura.revalidate();
-				pnSearchForImportFattura.repaint();
-			}
-		});
-		btnPlusCollapseSearch.setBounds(236, 12, 20, 20);
-		Image imgPlusCollapseSearch = new ImageIcon(this.getClass().getResource("/plusCollapse.png")).getImage();
-		btnPlusCollapseSearch.setIcon(new ImageIcon(imgPlusCollapseSearch));
-		pnSearchForImportFattura.add(btnPlusCollapseSearch);
-		
-		// btn minus collapse
-		JButton btnMinusCollapseSearch = new JButton();
-		btnMinusCollapseSearch.addActionListener(new ActionListener() {
+		// button collapse Minus pnCheckboxFattura 
+		ActionListener pnSearchForImportFatturaLisMinus = new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				pnSearchForImportFattura.setSize(300, 40);
 				pnSearchForImportFattura.revalidate();
 				pnSearchForImportFattura.repaint();
 			}
-		});
-		btnMinusCollapseSearch.setBounds(268, 12, 20, 20);
-		Image imgMinusCollapseSearch = new ImageIcon(this.getClass().getResource("/minusCollapse.png")).getImage();
-		btnMinusCollapseSearch.setIcon(new ImageIcon(imgMinusCollapseSearch));
-		pnSearchForImportFattura.add(btnMinusCollapseSearch);
+		};
+		pnSearchForImportFattura.setBtnCollapseMinus(pnSearchForImportFatturaLisMinus);
 		
-		// separatore testata - dati
-		JSeparator separatorCollapseSearch = new JSeparator();
-		separatorCollapseSearch.setBackground(new Color(255, 255, 255));
-		separatorCollapseSearch.setBounds(12, 47, 276, 2);
-		pnSearchForImportFattura.add(separatorCollapseSearch);
+		// button collapse Minus pnInsertFattura 
+		ActionListener pnSearchForImportFatturaLisPlus = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pnSearchForImportFattura.setSize(300, 245);
+				pnSearchForImportFattura.revalidate();
+				pnSearchForImportFattura.repaint();
+			}
+		};
+		pnSearchForImportFattura.setBtnCollapsePlus(pnSearchForImportFatturaLisPlus);
 		
-
-		rightPanel.add(pnSearchForImportFattura);
+		// dati
 		
 		// slider selezione minimo e massimo
 		lblMinimo = new JLabel("Minimo:   ");
@@ -877,7 +791,9 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			}
 		});
 		
+		rightPanel.add(pnSearchForImportFattura);
 		
+		// Dimensione Right Panele & Collapse
 		rightPanel.setPreferredSize(new Dimension(350, 400));
 		add(rightPanel, BorderLayout.LINE_END);
 		
@@ -910,7 +826,6 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		btnCollapseRightPanel.setIcon(new ImageIcon(imgCollapseRight));
 		rightPanel.add(btnCollapseRightPanel);
 		
-		//0, 0, 18, 120		
 	}
 	
 	
