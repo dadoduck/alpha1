@@ -3,7 +3,6 @@ import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.JLabel;
@@ -12,7 +11,6 @@ import java.awt.Font;
 import java.awt.Color;
 
 import javax.swing.JButton;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
@@ -33,7 +31,6 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -539,7 +536,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		scrollPane.setBounds(12, 12, 1276, 432);
 		add(scrollPane);
 		
-		LoadTable();
+		printTable();
 		
 //		order table by click column
 		table.getTableHeader().addMouseListener(new MouseAdapter() {
@@ -747,8 +744,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 				minSlider=sliderMinimo.getValue();
 				sliderMassimo.setMinimum(sliderMinimo.getValue());
 				sliderMassimo.repaint();
-				setColumnsName();
-				printTableMinMax();
+				printTable();
 				System.out.println(minSlider + "   " + maxSlider);
 			}
 		});
@@ -768,8 +764,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 				maxSlider=sliderMassimo.getValue();
 				sliderMinimo.setMaximum(sliderMassimo.getValue());
 				sliderMinimo.repaint();
-				setColumnsName();
-				printTableMinMax();
+				printTable();
 				System.out.println(minSlider + "   " + maxSlider);
 			}
 		});
@@ -833,57 +828,136 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 //	********************************************	METODI DI SUPPORTO	 ******************************************
 	
 	/*
-	 * ritorna il numero di colonne attive
-	 * da controllare  ->  SuPerFLuo
-	 * sostituire con setColumnsName()
+	 * stampa la tabella
 	 */
-	private String[] getColumnNames() {
-		int i=1; int j=1; 
-		if(boolData) i++;
-		if(boolIndirizzo) i++;
-		if(boolTipologia) i++;
-		if(boolImporto) i++;
-		if(boolAcquisitore) i++;
-		if(boolProvvA) i++;
-		if(boolVenditore) i++;
-		if(boolProvvV) i++;
+	private void printTable() {
+		
+		setColumnsName();
+		
+		try {
 			
-		String[] columnNames = new String[i];
-		columnNames[0]="NumeroFattura";
-		if(boolData) {
-			columnNames[j]="DataFattura";
-			j++;
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(strNameColumns);
+			table = new JTable();
+	        table.setModel(model);
+	        
+	        String query = myQuery();
+	        
+	        PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
+			NumberFormat f = new DecimalFormat("#,###.00");
+			
+			while(rs.next()) {
+				
+				List<Object> row = new ArrayList<Object>();
+								
+				row.add(rs.getString("NumeroFattura"));
+				
+				if(isPresent("DataFattura"))
+					row.add(rs.getString("DataFattura"));
+				if(isPresent("IndirizzoImmobile"))
+					row.add(rs.getString("IndirizzoImmobile"));
+				if(isPresent("Tipologia"))
+					row.add(rs.getString("Tipologia"));
+				if(isPresent("Importo")) {
+					row.add(f.format(rs.getDouble("Importo")));
+					totaleImporto+=rs.getDouble("Importo");
+				}
+				if(isPresent("Acquisitore"))
+					row.add(rs.getString("Acquisitore"));
+				if(isPresent("ProvvigioniAcquisitore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
+					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
+				}
+				if(isPresent("Venditore"))
+					row.add(rs.getString("Venditore"));
+				if(isPresent("ProvvigioniVenditore")) {
+					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
+					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
+				}
+				
+				model.addRow(row.toArray());
+				
+				
+			}
+			
+			List<Object> finalRow = new ArrayList<Object>();
+			
+			finalRow.add("TOTALE");
+			if(isPresent("DataFattura"))
+				finalRow.add("");
+			if(isPresent("IndirizzoImmobile"))
+				finalRow.add("");
+			if(isPresent("Tipologia"))
+				finalRow.add("");
+			if(isPresent("Importo"))
+				finalRow.add(f.format(totaleImporto));
+			if(isPresent("Acquisitore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniAcquisitore"))
+				finalRow.add(f.format(totaleProvvAcq));
+			if(isPresent("Venditore"))
+				finalRow.add("");
+			if(isPresent("ProvvigioniVenditore"))
+				finalRow.add(f.format(totaleProvvVen));
+			
+			model.addRow(finalRow.toArray());
+			
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
+			table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 50));
+			table.getTableHeader().setBackground(new Color(240, 235, 135));
+			table.setRowHeight(25);
+			
+			pst.close();
+			rs.close();
+			
+//			set field by click row
+			tableClickRow();
+	        
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		if(boolIndirizzo) {
-			columnNames[j]="IndirizzoImmobile";
-			j++;
-		}
-		if(boolTipologia) {
-			columnNames[j]="Tipologia";
-			j++;
-		}
-		if(boolImporto) {
-			columnNames[j]="Importo";
-			j++;
-		}
-		if(boolAcquisitore) { 
-			columnNames[j]="Acquisitore";
-			j++;
-		}
-		if(boolProvvA) { 
-			columnNames[j]="ProvvigioniAcquisitore";
-			j++;
-		}
-		if(boolVenditore) {
-			columnNames[j]="Venditore";
-			j++;
-		}
-		if(boolProvvV) {
-			columnNames[j]="ProvvigioniVenditore";
-			j++;
-		}
-		return columnNames;
+		scrollPane.setViewportView(table);
 	}
+	
+	/*
+	 * crea la query in base 
+	 * agli elementi selezionati
+	 */
+	private String myQuery() {
+		System.out.println("importo -> "+minImporto + "  " + maxImporto);
+		System.out.println("slider -> "+minSlider + "  " + maxSlider);
+		String query = "";
+		if(minImporto==0 && maxImporto==0) {
+			query = "select NumeroFattura ";
+			if(boolData) query+=", DataFattura";
+			if(boolIndirizzo) query+=", IndirizzoImmobile";
+			if(boolTipologia) query+=", Tipologia";
+			if(boolImporto) query+=", Importo";
+			if(boolAcquisitore) query+=", Acquisitore";
+			if(boolProvvA) query+=", ProvvigioniAcquisitore";
+			if(boolVenditore) query+=", Venditore";
+			if(boolProvvV) query+=", ProvvigioniVenditore";
+			query+=" from Fattura";			
+		} else {
+			query = "select NumeroFattura ";
+			if(boolData) query+=", DataFattura";
+			if(boolIndirizzo) query+=", IndirizzoImmobile";
+			if(boolTipologia) query+=", Tipologia";
+			if(boolImporto) query+=", Importo";
+			if(boolAcquisitore) query+=", Acquisitore";
+			if(boolProvvA) query+=", ProvvigioniAcquisitore";
+			if(boolVenditore) query+=", Venditore";
+			if(boolProvvV) query+=", ProvvigioniVenditore";
+			query+=" from Fattura where Importo >= " + minSlider + " and Importo <= " + maxSlider;
+		}
+		return query;
+	}
+		
 	
 	/*
 	 * get numero colonne selezionate che
@@ -901,6 +975,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		if(boolProvvV) count++;
 		return count;
 	}
+	
 	
 	/*
 	 * creazione tabella con le colonne
@@ -946,6 +1021,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 	}
 	
+	
 	/*
 	 * metodo runCheck comune a tutte le chkbox
 	 * funzionalità aggiunte in tutte le chkbx
@@ -956,6 +1032,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		stampaColonneSelezionate();
 		printTable();
 	}
+	
 	
 	/*
 	 * metodo test per controllare checkbox selezionate
@@ -984,23 +1061,6 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	}	
 	
 	/*
-	 * creazione query da selezione
-	 */
-	private String getQuery() {
-		String query = "select NumeroFattura ";
-		if(boolData) query+=", DataFattura";
-		if(boolIndirizzo) query+=", IndirizzoImmobile";
-		if(boolTipologia) query+=", Tipologia";
-		if(boolImporto) query+=", Importo";
-		if(boolAcquisitore) query+=", Acquisitore";
-		if(boolProvvA) query+=", ProvvigioniAcquisitore";
-		if(boolVenditore) query+=", Venditore";
-		if(boolProvvV) query+=", ProvvigioniVenditore";
-		query+=" from Fattura";
-		return query;
-	}
-	
-	/*
 	 * verifica se la colonna è presente in tabella
 	 */
 	private boolean isPresent(String colonna) {
@@ -1010,280 +1070,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		return false;
 	}
 	
-	/*
-	 * primo caricamento JTable
-	 */
-	private void LoadTable() {
-		try {
-			
-			DefaultTableModel model = new DefaultTableModel();
-			model.setColumnIdentifiers(getColumnNames());
-			table = new JTable();
-	        table.setModel(model);
-			
-			//String query = "select * from Fattura";
-	        String query = getQuery();
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			
-			String strNumero="", strIndirizzo="", strTipologia="", strAcquisitore="", strVenditore="";
-			double dblImporto = 0, dblProvvA = 0, dblProvvV = 0;
-			String strDate="";
-						
-			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
-			NumberFormat f = new DecimalFormat("#,###.00"); 
-			
-			while(rs.next()) {
-				
-				strNumero=rs.getString("NumeroFattura");
-				if(!rs.getString("DataFattura").equals(""))
-					strDate=rs.getString("DataFattura");
-				if(rs.getString("IndirizzoImmobile")!="")
-					strIndirizzo=rs.getString("IndirizzoImmobile");
-				if(rs.getString("Tipologia")!="")
-					strTipologia=rs.getString("Tipologia");
-				if(rs.getDouble("Importo")!=0)
-					dblImporto=rs.getDouble("Importo");
-				if(rs.getString("Acquisitore")!="")
-					strAcquisitore=rs.getString("Acquisitore");
-				if(rs.getDouble("ProvvigioniAcquisitore")!=0)
-					dblProvvA=rs.getDouble("ProvvigioniAcquisitore");
-				if(rs.getString("Venditore")!="")
-					strVenditore=rs.getString("Venditore");
-				if(rs.getDouble("ProvvigioniVenditore")!=0)
-					dblProvvV=rs.getDouble("ProvvigioniVenditore");
-				
-				model.addRow(new Object[]{strNumero, strDate, strIndirizzo, strTipologia, f.format(dblImporto), strAcquisitore, f.format(dblProvvA), strVenditore, f.format(dblProvvV)});
-				 
-				totaleImporto+=dblImporto;
-				totaleProvvAcq+=dblProvvA;
-				totaleProvvVen+=dblProvvV;
-			}
-			
-			model.addRow(new Object[] {"Totale", "", "", "", f.format(totaleImporto), "", f.format(totaleProvvAcq), "", f.format(totaleProvvVen)});
-			
-			table.setDefaultRenderer(Object.class, new AlphaTableRender());
-			table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 50));
-			table.getTableHeader().setBackground(new Color(240, 235, 135));
-			table.setRowHeight(25);
-			
-			pst.close();
-			rs.close();
-			
-//			set field by click row
-			tableClickRow();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	
-	/*
-	 * creazione tabella
-	 */
-	private void printTable() {
-
-		scrollPane.getViewport().remove(table);
-		try {
-			
-			DefaultTableModel model = new DefaultTableModel();
-			model.setColumnIdentifiers(strNameColumns);
-			table = new JTable();
-	        table.setModel(model);
-	        
-	        String query = getQuery();
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			
-			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
-			NumberFormat f = new DecimalFormat("#,###.00");
-			
-			while(rs.next()) {
-				
-				List<Object> row = new ArrayList<Object>();
-								
-				row.add(rs.getString("NumeroFattura"));
-				
-				if(isPresent("DataFattura"))
-					row.add(rs.getString("DataFattura"));
-				if(isPresent("IndirizzoImmobile"))
-					row.add(rs.getString("IndirizzoImmobile"));
-				if(isPresent("Tipologia"))
-					row.add(rs.getString("Tipologia"));
-				if(isPresent("Importo")) {
-					row.add(f.format(rs.getDouble("Importo")));
-					totaleImporto+=rs.getDouble("Importo");
-				}
-				if(isPresent("Acquisitore"))
-					row.add(rs.getString("Acquisitore"));
-				if(isPresent("ProvvigioniAcquisitore")) {
-					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
-					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
-				}
-				if(isPresent("Venditore"))
-					row.add(rs.getString("Venditore"));
-				if(isPresent("ProvvigioniVenditore")) {
-					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
-					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
-				}
-				
-				model.addRow(row.toArray());
-				
-				
-			}
-			
-			List<Object> finalRow = new ArrayList<Object>();
-			
-			finalRow.add("TOTALE");
-			if(isPresent("DataFattura"))
-				finalRow.add("");
-			if(isPresent("IndirizzoImmobile"))
-				finalRow.add("");
-			if(isPresent("Tipologia"))
-				finalRow.add("");
-			if(isPresent("Importo"))
-				finalRow.add(f.format(totaleImporto));
-			if(isPresent("Acquisitore"))
-				finalRow.add("");
-			if(isPresent("ProvvigioniAcquisitore"))
-				finalRow.add(f.format(totaleProvvAcq));
-			if(isPresent("Venditore"))
-				finalRow.add("");
-			if(isPresent("ProvvigioniVenditore"))
-				finalRow.add(f.format(totaleProvvVen));
-			
-			model.addRow(finalRow.toArray());
-			
-			table.setDefaultRenderer(Object.class, new AlphaTableRender());
-			table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 50));
-			table.getTableHeader().setBackground(new Color(240, 235, 135));
-			table.setRowHeight(25);
-			
-			pst.close();
-			rs.close();
-			
-//			set field by click row
-			tableClickRow();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		scrollPane.setViewportView(table);
-        
-	}
-	
-	/*
-	 * Overloading creazione tabella
-	 * parametro query 
-	 * con clausola where sulla select
-	 */
-	private void printTableMinMax(){
-		scrollPane.getViewport().remove(table);
-		try {
-			
-			DefaultTableModel model = new DefaultTableModel();
-			model.setColumnIdentifiers(strNameColumns);
-			table = new JTable();
-	        table.setModel(model);
-	        
-	        String query = getQueryMinMax();
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			
-			double totaleImporto = 0, totaleProvvAcq = 0, totaleProvvVen = 0;
-			NumberFormat f = new DecimalFormat("#,###.00");
-			
-			while(rs.next()) {
-				
-				List<Object> row = new ArrayList<Object>();
-								
-				row.add(rs.getString("NumeroFattura"));
-				
-				if(isPresent("DataFattura"))
-					row.add(rs.getString("DataFattura"));
-				if(isPresent("IndirizzoImmobile"))
-					row.add(rs.getString("IndirizzoImmobile"));
-				if(isPresent("Tipologia"))
-					row.add(rs.getString("Tipologia"));
-				if(isPresent("Importo")) {
-					row.add(f.format(rs.getDouble("Importo")));
-					totaleImporto+=rs.getDouble("Importo");
-				}
-				if(isPresent("Acquisitore"))
-					row.add(rs.getString("Acquisitore"));
-				if(isPresent("ProvvigioniAcquisitore")) {
-					row.add(f.format(rs.getDouble("ProvvigioniAcquisitore")));
-					totaleProvvAcq+=rs.getDouble("ProvvigioniAcquisitore");
-				}
-				if(isPresent("Venditore"))
-					row.add(rs.getString("Venditore"));
-				if(isPresent("ProvvigioniVenditore")) {
-					row.add(f.format(rs.getDouble("ProvvigioniVenditore")));
-					totaleProvvVen+=rs.getDouble("ProvvigioniVenditore");
-				}
-				
-				model.addRow(row.toArray());
-				
-				
-			}
-			
-			List<Object> finalRow = new ArrayList<Object>();
-			
-			finalRow.add("TOTALE");
-			if(isPresent("DataFattura"))
-				finalRow.add("");
-			if(isPresent("IndirizzoImmobile"))
-				finalRow.add("");
-			if(isPresent("Tipologia"))
-				finalRow.add("");
-			if(isPresent("Importo"))
-				finalRow.add(f.format(totaleImporto));
-			if(isPresent("Acquisitore"))
-				finalRow.add("");
-			if(isPresent("ProvvigioniAcquisitore"))
-				finalRow.add(f.format(totaleProvvAcq));
-			if(isPresent("Venditore"))
-				finalRow.add("");
-			if(isPresent("ProvvigioniVenditore"))
-				finalRow.add(f.format(totaleProvvVen));
-			
-			model.addRow(finalRow.toArray());
-			
-			table.setDefaultRenderer(Object.class, new AlphaTableRender());
-			table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 50));
-			table.getTableHeader().setBackground(new Color(240, 235, 135));
-			table.setRowHeight(25);
-			
-			pst.close();
-			rs.close();
-			
-//			set field by click row
-			tableClickRow();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		scrollPane.setViewportView(table);
-        
-	}
-	
-	/*
-	 * ritorna query con clausola 
-	 * su importo
-	 */
-	private String getQueryMinMax() {
-		String query = "select NumeroFattura ";
-		if(boolData) query+=", DataFattura";
-		if(boolIndirizzo) query+=", IndirizzoImmobile";
-		if(boolTipologia) query+=", Tipologia";
-		if(boolImporto) query+=", Importo";
-		if(boolAcquisitore) query+=", Acquisitore";
-		if(boolProvvA) query+=", ProvvigioniAcquisitore";
-		if(boolVenditore) query+=", Venditore";
-		if(boolProvvV) query+=", ProvvigioniVenditore";
-		query+=" from Fattura where Importo >= " + minSlider + " and Importo <= " + maxSlider;
-		return query;
-	}
 	
 	/*
 	 * set importo minimo ed importo massimo 
@@ -1311,10 +1098,14 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			sliderMassimo.setMaximum((int)maxImporto);
 			sliderMassimo.setMinimum((int)minImporto);
 			
+			minSlider = (int)minImporto;
+			maxSlider = (int)maxImporto;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	/*
 	 * carica valori da database in combobox
@@ -1334,6 +1125,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		
 	}
 
+	
 	/*
 	 * select row in table
 	 */
@@ -1369,6 +1161,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		});
 	}
 	
+	
 	/*
 	 * controllo dati per inserimento
 	 * Fattura in DB
@@ -1379,6 +1172,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			return false;
 		return true;
 	}
+	
 	
 	/*
 	 * convert date for insert into DB
@@ -1398,6 +1192,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		return strFormatted;
 	}
 	
+	
 	/*
 	 * reset campi inserimento Fattura
 	 */
@@ -1412,6 +1207,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		cbDatiFatturaVenditoreIns.setSelectedIndex(0);
 		tfDatiFatturaProvvVIns.setText("");
 	}
+	
 	
 	/*
 	 * search in DB next number Fattura
@@ -1429,35 +1225,5 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			e.printStackTrace();
 		} return numeroFattura+1;
 	}
-}
-
-
-
-
-/*
- * pannello con sfondo
- */
-class ImagePanel extends JPanel {
-	
-	private Image img;
-
-	public ImagePanel(String img) {
-		this(new ImageIcon(img).getImage());
-	}
-
-	public ImagePanel(Image img) {
-		this.img = img;
-		Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
-		setPreferredSize(size);
-	    setMinimumSize(size);
-	    setMaximumSize(size);
-	    setSize(size);
-	    setLayout(null);
-	}
-
-	public void paintComponent(Graphics g) {
-		g.drawImage(img, 0, 0, null);
-	}
-
 }
 
