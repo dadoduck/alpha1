@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -71,7 +72,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private AlphaPanel pnInsertFattura;
 	
 	private JTextField tfDatiFatturaNumero;
-	private JTextField tfDatiFatturaData;
+	private ObservingTextField tfDatiFatturaData;
 	private JTextField tfDatiFatturaIndirizzo;
 	private JComboBox<String> cbDatiFatturaTipologia;
 	private JTextField tfDatiFatturaImporto;
@@ -81,7 +82,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private JTextField tfDatiFatturaProvvV;
 	
 	private JTextField tfDatiFatturaNumeroIns;
-	private JTextField tfDatiFatturaDataIns;
+	private ObservingTextField tfDatiFatturaDataIns;
 	private JTextField tfDatiFatturaIndirizzoIns;
 	private JComboBox<String> cbDatiFatturaTipologiaIns;
 	private JTextField tfDatiFatturaImportoIns;
@@ -181,14 +182,25 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		pnDatiFattura.add(tfDatiFatturaNumero);
 		tfDatiFatturaNumero.setColumns(10);
 		
-		JLabel lblData = new JLabel("Data");
-		lblData.setForeground(new Color(255, 255, 255));
-		lblData.setBounds(142, 70, 43, 15);
-		pnDatiFattura.add(lblData);
+		JButton btnDataModifica = new JButton("Data");
+		btnDataModifica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String lang = null;
+				final Locale locale = getLocale(lang);
+				DatePicker dp = new DatePicker(tfDatiFatturaData, locale);
+				Date selectedDate = dp.parseDate(tfDatiFatturaData.getText());
+				dp.setSelectedDate(selectedDate);
+				dp.start(tfDatiFatturaData);
+			}
+		});
+		btnDataModifica.setForeground(new Color(255, 255, 255));
+		btnDataModifica.setBounds(142, 68, 55, 21);
+		pnDatiFattura.add(btnDataModifica);
 		
-		tfDatiFatturaData = new JTextField();
+		tfDatiFatturaData = new ObservingTextField();
+		tfDatiFatturaData.setEditable(false);
 		tfDatiFatturaData.setBackground(new Color(224, 255, 255));
-		tfDatiFatturaData.setBounds(192, 68, 96, 20);
+		tfDatiFatturaData.setBounds(206, 68, 82, 20);
 		pnDatiFattura.add(tfDatiFatturaData);
 		tfDatiFatturaData.setColumns(10);
 		
@@ -361,14 +373,25 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		pnInsertFattura.add(tfDatiFatturaNumeroIns);
 		tfDatiFatturaNumeroIns.setColumns(10);
 		
-		JLabel lblDataIns = new JLabel("Data");
-		lblDataIns.setForeground(new Color(255, 255, 255));
-		lblDataIns.setBounds(142, 70, 43, 15);
-		pnInsertFattura.add(lblDataIns);
+		JButton btnDataIns = new JButton("Data");
+		btnDataIns.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String lang = null;
+				final Locale locale = getLocale(lang);
+				DatePicker dp = new DatePicker(tfDatiFatturaDataIns, locale);
+				Date selectedDate = dp.parseDate(tfDatiFatturaDataIns.getText());
+				dp.setSelectedDate(selectedDate);
+				dp.start(tfDatiFatturaDataIns);
+			}
+		});
+		btnDataIns.setForeground(new Color(255, 255, 255));
+		btnDataIns.setBounds(142, 68, 55, 21);
+		pnInsertFattura.add(btnDataIns);
 		
-		tfDatiFatturaDataIns = new JTextField();
+		tfDatiFatturaDataIns = new ObservingTextField();
+		tfDatiFatturaDataIns.setEditable(false);
 		tfDatiFatturaDataIns.setBackground(new Color(224, 255, 255));
-		tfDatiFatturaDataIns.setBounds(192, 68, 96, 20);
+		tfDatiFatturaDataIns.setBounds(206, 68, 82, 20);
 		pnInsertFattura.add(tfDatiFatturaDataIns);
 		tfDatiFatturaDataIns.setColumns(10);
 		
@@ -454,12 +477,11 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		btnInsertDatiFattura.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(controlloDati()) {
-					String strDataFattura = dateToDatabase(tfDatiFatturaDataIns.getText());
 					try {
 						String query = "insert into Fattura (DataFattura, IndirizzoImmobile, Tipologia, Importo, Acquisitore, ProvvigioniAcquisitore, Venditore, ProvvigioniVenditore) "
 										+ "values (?, ?, ?, ?, ?, ?, ?, ?)";
 						PreparedStatement pst = connection.prepareStatement(query);
-						pst.setString(1, strDataFattura);
+						pst.setString(1, tfDatiFatturaDataIns.getText());
 						pst.setString(2, tfDatiFatturaIndirizzoIns.getText());
 						pst.setString(3, (String)cbDatiFatturaTipologiaIns.getSelectedItem());
 						pst.setString(4, tfDatiFatturaImportoIns.getText());
@@ -841,7 +863,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			table = new JTable();
 	        table.setModel(model);
 	        
-	        String query = myQuery();
+	        String query = getQuery();
 	        
 	        PreparedStatement pst = connection.prepareStatement(query);
 			ResultSet rs = pst.executeQuery();
@@ -928,7 +950,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	 * crea la query in base 
 	 * agli elementi selezionati
 	 */
-	private String myQuery() {
+	private String getQuery() {
 		System.out.println("importo -> "+minImporto + "  " + maxImporto);
 		System.out.println("slider -> "+minSlider + "  " + maxSlider);
 		String query = "";
@@ -1208,6 +1230,16 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		tfDatiFatturaProvvVIns.setText("");
 	}
 	
+	
+	/*
+	 * posizione IT per la data
+	 */
+	private Locale getLocale(String loc) {
+		if(loc!=null && loc.length() > 0)
+			return new Locale(loc);
+		else
+			return Locale.ITALY;
+	}
 	
 	/*
 	 * search in DB next number Fattura
