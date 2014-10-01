@@ -86,6 +86,17 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnPersonale);
 		
 		JMenuItem mntmNuovo = new JMenuItem("Gestisci");
+		mntmNuovo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				GestionePersonale gestionePersonale = new GestionePersonale();
+				container.removeAll();
+				container.repaint();
+				container.revalidate();
+				container.add(gestionePersonale);
+				container.repaint();
+				container.revalidate();
+			}
+		});
 		mnPersonale.add(mntmNuovo);
 		
 		JMenu mnTipologia = new JMenu("Tipologia");
