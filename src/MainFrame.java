@@ -65,10 +65,7 @@ public class MainFrame extends JFrame {
 		JMenu mnFattura = new JMenu("Fattura");
 		menuBar.add(mnFattura);
 		
-		JMenuItem mntmNuova = new JMenuItem("Nuova");
-		mnFattura.add(mntmNuova);
-		
-		JMenuItem mntmVisualizza = new JMenuItem("Visualizza");
+		JMenuItem mntmVisualizza = new JMenuItem("Gestisci");
 		mntmVisualizza.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				VisualizzaFatturaPanelBis visualizzaFatturaPanel = new VisualizzaFatturaPanelBis();
@@ -88,11 +85,8 @@ public class MainFrame extends JFrame {
 		JMenu mnPersonale = new JMenu("Personale");
 		menuBar.add(mnPersonale);
 		
-		JMenuItem mntmNuovo = new JMenuItem("Nuovo");
+		JMenuItem mntmNuovo = new JMenuItem("Gestisci");
 		mnPersonale.add(mntmNuovo);
-		
-		JMenuItem mntmVisualizza_1 = new JMenuItem("Visualizza");
-		mnPersonale.add(mntmVisualizza_1);
 		
 		JMenu mnTipologia = new JMenu("Tipologia");
 		menuBar.add(mnTipologia);

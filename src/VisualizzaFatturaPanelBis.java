@@ -20,11 +20,8 @@ import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -113,6 +110,10 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	private int maxSlider = 0;
 	private JLabel lblMinimo;
 	private JLabel lblMassimo;
+	
+//	valori ordinamento table by click Header
+	private int orderByType=0;
+	private String orderByNameColumn="";
 	
 	/**
 	 * Create the panel.
@@ -298,7 +299,6 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 					pst.close();
 					setColumnsName();
 					runCheck();
-//					clearTextFields();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -558,27 +558,8 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		scrollPane.setBounds(12, 12, 1276, 432);
 		add(scrollPane);
 		
-		printTable();
-		
-//		order table by click column
-		table.getTableHeader().addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		    	int col = table.columnAtPoint(e.getPoint());
-		    	String nameColumn = table.getColumnName(col);
-		    	if(nameColumn.equals("DataFattura")) {
-	    			nameColumn = "datetime(DataFattura)"; 
-	    		}
-		    	if (e.getClickCount() == 1) {
-			    	//orderTable(nameColumn, "ASC");
-		    		System.out.println("un click");
-		    	} else if(e.getClickCount() == 2) {
-		    		//orderTable(nameColumn, "DESC");
-		    		System.out.println("due click");
-		    	}
-		    }
-		});
-
+		printTable(orderByType, orderByNameColumn);
+	
 		scrollPane.setViewportView(table);
 		
 		
@@ -766,7 +747,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 				minSlider=sliderMinimo.getValue();
 				sliderMassimo.setMinimum(sliderMinimo.getValue());
 				sliderMassimo.repaint();
-				printTable();
+				printTable(orderByType, orderByNameColumn);
 				System.out.println(minSlider + "   " + maxSlider);
 			}
 		});
@@ -786,7 +767,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 				maxSlider=sliderMassimo.getValue();
 				sliderMinimo.setMaximum(sliderMassimo.getValue());
 				sliderMinimo.repaint();
-				printTable();
+				printTable(orderByType, orderByNameColumn);
 				System.out.println(minSlider + "   " + maxSlider);
 			}
 		});
@@ -851,11 +832,15 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	
 	/*
 	 * stampa la tabella
+	 * typeOrder - tipo ordinamento tabella - 
+	 *     0 - nessun ordinamento
+	 *     1 - ordinamento crescente
+	 *     2 - ordinamentp decrescente
+	 * nameColumn - colonna su cui effettuare ordinamento    
 	 */
-	private void printTable() {
+	private void printTable(int typeOrder, String nameColumn) {
 		
 		setColumnsName();
-		
 		try {
 			
 			DefaultTableModel model = new DefaultTableModel();
@@ -863,7 +848,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			table = new JTable();
 	        table.setModel(model);
 	        
-	        String query = getQuery();
+	        String query = getQuery(typeOrder, nameColumn);
 	        
 	        PreparedStatement pst = connection.prepareStatement(query);
 			ResultSet rs = pst.executeQuery();
@@ -935,8 +920,10 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			pst.close();
 			rs.close();
 			
-//			set field by click row
+			// set field by click row
 			tableClickRow();
+			// order table by click column
+			addHeaderListenerTable();
 	        
 			
 			
@@ -950,7 +937,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	 * crea la query in base 
 	 * agli elementi selezionati
 	 */
-	private String getQuery() {
+	private String getQuery(int typeOrder, String nameColumn) {
 		System.out.println("importo -> "+minImporto + "  " + maxImporto);
 		System.out.println("slider -> "+minSlider + "  " + maxSlider);
 		String query = "";
@@ -965,6 +952,10 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			if(boolVenditore) query+=", Venditore";
 			if(boolProvvV) query+=", ProvvigioniVenditore";
 			query+=" from Fattura";			
+			if(typeOrder!=0) {
+				String ord = (typeOrder==1) ? "ASC" : "DESC";
+				query+=" ORDER BY " + nameColumn + " " + ord;
+			}
 		} else {
 			query = "select NumeroFattura ";
 			if(boolData) query+=", DataFattura";
@@ -976,6 +967,10 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 			if(boolVenditore) query+=", Venditore";
 			if(boolProvvV) query+=", ProvvigioniVenditore";
 			query+=" from Fattura where Importo >= " + minSlider + " and Importo <= " + maxSlider;
+			if(typeOrder!=0) {
+				String ord = (typeOrder==1) ? "ASC" : "DESC";
+				query+=" ORDER BY " + nameColumn + " " + ord;
+			}
 		}
 		return query;
 	}
@@ -1052,7 +1047,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		stampaStatoChkbx(boolData, boolIndirizzo, boolTipologia, boolImporto, boolAcquisitore, boolProvvA, boolVenditore, boolProvvV);
 		System.out.println(getNumColumnSelected());
 		stampaColonneSelezionate();
-		printTable();
+		printTable(orderByType, orderByNameColumn);
 	}
 	
 	
@@ -1183,6 +1178,35 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 		});
 	}
 	
+	/*
+	 * listener header table
+	 * order by click
+	 */
+	private void addHeaderListenerTable() {
+		// order table by click column
+		table.getTableHeader().addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		    	int col = table.columnAtPoint(e.getPoint());
+		    	String nameColumn = table.getColumnName(col);
+		    	if(nameColumn.equals("DataFattura")) {
+	    			nameColumn = "datetime(DataFattura)"; 
+	    		}
+		    	if (e.getClickCount() == 1) {
+		    		orderByType = 1;
+		    		printTable(1, nameColumn);
+		    		System.out.println("un click");
+		    	} else if(e.getClickCount() == 2) {
+		    		orderByType = 2;
+		    		printTable(2, nameColumn);
+		    		System.out.println("due click");
+		    	}
+		    	orderByNameColumn=nameColumn;
+		    }
+		});
+
+	}
+	
 	
 	/*
 	 * controllo dati per inserimento
@@ -1193,25 +1217,6 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 				tfDatiFatturaProvvAIns.getText().equals("") || tfDatiFatturaProvvVIns.getText().equals("") )
 			return false;
 		return true;
-	}
-	
-	
-	/*
-	 * convert date for insert into DB
-	 */
-	private String dateToDatabase(String  strDate) {
-		DateFormat formatter = new SimpleDateFormat("dd/MM/yy");
-		Date date = new Date();
-		try {
-			date = formatter.parse(strDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		SimpleDateFormat simpleFormat=new SimpleDateFormat("yyyy-MM-dd");
-		String strFormatted = simpleFormat.format(date);
-		System.out.println(date);
-		System.out.println(strFormatted);
-		return strFormatted;
 	}
 	
 	
