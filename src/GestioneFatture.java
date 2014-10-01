@@ -46,7 +46,7 @@ import java.awt.SystemColor;
 import javax.swing.SwingConstants;
 
 
-public class VisualizzaFatturaPanelBis extends JPanel {
+public class GestioneFatture extends JPanel {
 	
 	Connection connection = null;
 	
@@ -118,7 +118,7 @@ public class VisualizzaFatturaPanelBis extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public VisualizzaFatturaPanelBis() {
+	public GestioneFatture() {
 		
 //		connessione al database
 		connection = sqliteConnection.dbConnector();

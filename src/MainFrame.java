@@ -68,11 +68,11 @@ public class MainFrame extends JFrame {
 		JMenuItem mntmVisualizza = new JMenuItem("Gestisci");
 		mntmVisualizza.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				VisualizzaFatturaPanelBis visualizzaFatturaPanel = new VisualizzaFatturaPanelBis();
+				GestioneFatture gestioneFatture = new GestioneFatture();
 				container.removeAll();
 				container.repaint();
 				container.revalidate();
-				container.add(visualizzaFatturaPanel);
+				container.add(gestioneFatture);
 				container.repaint();
 				container.revalidate();
 			}
