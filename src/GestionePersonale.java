@@ -7,6 +7,8 @@ import java.awt.SystemColor;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +19,7 @@ import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -43,14 +46,17 @@ public class GestionePersonale extends JPanel {
 	private AlphaPanel pnModificaPersonale;
 	
 	// dati pannello modifica personale
-	private JTextField tfModificaID;
-	private JTextField tfModificaData;
-	private JTextField tfModificaNome;
-	private JTextField tfModificaCognome;
-	private JTextField tfModificaTelefono;
+	private JTextField tfGestionePersonaleID;
+	private ObservingTextField tfGestionePersonaleData;
+	private JTextField tfGestionePersonaleNome;
+	private JTextField tfGestionePersonaleCognome;
+	private JTextField tfGestionePersonaleTelefono;
 	
 	
 	private JScrollPane scrollPane;
+	private JButton btnModificaPersonale;
+	private JButton btnInserisciPersona;
+	private JButton btnEliminaPersonale;
 	
 	
 	/**
@@ -82,7 +88,8 @@ public class GestionePersonale extends JPanel {
 		
 		// ********** pannello Modifica personale
 		
-		pnModificaPersonale = new AlphaPanel("images/sfondo.jpg", "Modifica Personale", 30, 0, 300, 360);
+		pnModificaPersonale = new AlphaPanel("images/sfondo.jpg", "Gestione Personale", 30, 0, 300, 390);
+		pnModificaPersonale.setBounds(30, 0, 300, 390);
 		
 		// button collapse Minus pnDatiFattura 
 		ActionListener pnDatiFatturaLisMinus = new ActionListener() {
@@ -100,7 +107,7 @@ public class GestionePersonale extends JPanel {
 		ActionListener pnDatiFatturaLisPlus = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				pnModificaPersonale.setSize(300, 360);
+				pnModificaPersonale.setSize(300, 390);
 				//pnModificaPersonale.setBounds(30, pnDatiFattura.getHeight() + 20, 300, 40);
 				pnModificaPersonale.revalidate();
 				pnModificaPersonale.repaint();
@@ -115,61 +122,90 @@ public class GestionePersonale extends JPanel {
 		lblNumeroID.setBounds(12, 70, 90, 15);
 		pnModificaPersonale.add(lblNumeroID);
 		
-		tfModificaID = new JTextField();
-		tfModificaID.setEditable(false);
-		tfModificaID.setBackground(SystemColor.controlHighlight);
-		tfModificaID.setBounds(142, 68, 146, 20);
-		pnModificaPersonale.add(tfModificaID);
-		tfModificaID.setColumns(10);
+		tfGestionePersonaleID = new JTextField();
+		tfGestionePersonaleID.setEditable(false);
+		tfGestionePersonaleID.setBackground(SystemColor.controlHighlight);
+		tfGestionePersonaleID.setBounds(142, 68, 146, 20);
+		tfGestionePersonaleID.setText(String.valueOf(getNextNumber()));
+		pnModificaPersonale.add(tfGestionePersonaleID);
+		tfGestionePersonaleID.setColumns(10);
 		
 		JLabel lblModificaNome = new JLabel("Nome");
 		lblModificaNome.setForeground(new Color(255, 255, 255));
 		lblModificaNome.setBounds(12, 110, 139, 15);
 		pnModificaPersonale.add(lblModificaNome);
 		
-		tfModificaNome = new JTextField();
-		tfModificaNome.setBackground(new Color(224, 255, 255));
-		tfModificaNome.setBounds(142, 110, 146, 20);
-		pnModificaPersonale.add(tfModificaNome);
-		tfModificaNome.setColumns(10);
+		tfGestionePersonaleNome = new JTextField();
+		tfGestionePersonaleNome.setBackground(new Color(224, 255, 255));
+		tfGestionePersonaleNome.setBounds(142, 110, 146, 20);
+		pnModificaPersonale.add(tfGestionePersonaleNome);
+		tfGestionePersonaleNome.setColumns(10);
 		
 		JLabel lblModificaCognome = new JLabel("Cognome");
 		lblModificaCognome.setForeground(new Color(255, 255, 255));
 		lblModificaCognome.setBounds(12, 150, 139, 15);
 		pnModificaPersonale.add(lblModificaCognome);
 		
-		tfModificaCognome = new JTextField();
-		tfModificaCognome.setBackground(new Color(224, 255, 255));
-		tfModificaCognome.setBounds(142, 150, 146, 20);
-		pnModificaPersonale.add(tfModificaCognome);
-		tfModificaCognome.setColumns(10);
+		tfGestionePersonaleCognome = new JTextField();
+		tfGestionePersonaleCognome.setBackground(new Color(224, 255, 255));
+		tfGestionePersonaleCognome.setBounds(142, 150, 146, 20);
+		pnModificaPersonale.add(tfGestionePersonaleCognome);
+		tfGestionePersonaleCognome.setColumns(10);
 		
 		JButton btnDataMod = new JButton("Data");
+		btnDataMod.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String lang = null;
+				final Locale locale = getLocale(lang);
+				DatePicker dp = new DatePicker(tfGestionePersonaleData, locale);
+				Date selectedDate = dp.parseDate(tfGestionePersonaleData.getText());
+				dp.setSelectedDate(selectedDate);
+				dp.start(tfGestionePersonaleData);
+			}
+		});
 		btnDataMod.setForeground(new Color(255, 255, 255));
 		btnDataMod.setBackground(Color.darkGray);               	// MOMENTaneO
 		btnDataMod.setBounds(12, 190, 80, 21);
 		pnModificaPersonale.add(btnDataMod);
 		
-		tfModificaData = new ObservingTextField();
-		tfModificaData.setEditable(false);
-		tfModificaData.setBackground(new Color(224, 255, 255));
-		tfModificaData.setBounds(142, 190, 146, 20);
-		pnModificaPersonale.add(tfModificaData);
-		tfModificaData.setColumns(10);
+		tfGestionePersonaleData = new ObservingTextField();
+		tfGestionePersonaleData.setBackground(new Color(224, 255, 255));
+		tfGestionePersonaleData.setBounds(142, 190, 146, 20);
+		pnModificaPersonale.add(tfGestionePersonaleData);
+		tfGestionePersonaleData.setColumns(10);
 		
 		JLabel lblModificaTelefono = new JLabel("Telefono");
 		lblModificaTelefono.setForeground(new Color(255, 255, 255));
 		lblModificaTelefono.setBounds(12, 230, 139, 15);
 		pnModificaPersonale.add(lblModificaTelefono);
 		
-		tfModificaTelefono = new JTextField();
-		tfModificaTelefono.setBackground(new Color(224, 255, 255));
-		tfModificaTelefono.setBounds(142, 230, 146, 20);
-		pnModificaPersonale.add(tfModificaTelefono);
-		tfModificaTelefono.setColumns(10);
+		tfGestionePersonaleTelefono = new JTextField();
+		tfGestionePersonaleTelefono.setBackground(new Color(224, 255, 255));
+		tfGestionePersonaleTelefono.setBounds(142, 230, 146, 20);
+		pnModificaPersonale.add(tfGestionePersonaleTelefono);
+		tfGestionePersonaleTelefono.setColumns(10);
 		
 		// btn update e svuota campi
-		JButton btnModificaPersonale = new JButton("Modifica");
+		btnModificaPersonale = new JButton("Modifica");
+		btnModificaPersonale.setEnabled(false);
+		btnModificaPersonale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					String query = "Update Personale set " + 
+									"Nome='"+tfGestionePersonaleNome.getText()+"', Cognome='"+tfGestionePersonaleCognome.getText() + 
+									"', Telefono='"+tfGestionePersonaleTelefono.getText() + 
+									"', DataNascita='"+tfGestionePersonaleData.getText() +
+									"' where PersonaleID='"+tfGestionePersonaleID.getText()+"'";
+					PreparedStatement pst = connection.prepareStatement(query);
+					pst.execute();
+					JOptionPane.showMessageDialog(null, "Aggiornamento riuscito!");
+					pst.close();
+					printTable();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 		btnModificaPersonale.setBounds(12, 270, 128, 20);
 		Image imgModificaPersonale = new ImageIcon(this.getClass().getResource("/updateDatiFattura.png")).getImage();
 		btnModificaPersonale.setIcon(new ImageIcon(imgModificaPersonale));
@@ -177,17 +213,60 @@ public class GestionePersonale extends JPanel {
 		
 		// btn svuota campi
 		JButton btnClearPersonale = new JButton("Clear");
+		btnClearPersonale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				btnModificaPersonale.setEnabled(false);
+				btnEliminaPersonale.setEnabled(false);
+				btnInserisciPersona.setEnabled(true);
+				resetFields();
+			}
+		});
 		btnClearPersonale.setBounds(160, 270, 128, 20);
 		Image imgClearPersonale = new ImageIcon(this.getClass().getResource("/clearDatiFattura.png")).getImage();
 		btnClearPersonale.setIcon(new ImageIcon(imgClearPersonale));
 		pnModificaPersonale.add(btnClearPersonale);
 		
-		// btn svuota campi
-		JButton btnEliminaPersonale = new JButton("Elimina");
-		btnEliminaPersonale.setBounds(12, 310, 276, 20);
+		// btn inserisci		
+		btnInserisciPersona = new JButton("Inserisci");
+		btnInserisciPersona.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(controlloDati()) {
+					try {
+						String query = "insert into Personale (Nome, Cognome, Telefono, DataNascita) "
+										+ "values (?, ?, ?, ?)";
+						PreparedStatement pst = connection.prepareStatement(query);
+						pst.setString(1, tfGestionePersonaleNome.getText());
+						pst.setString(2, tfGestionePersonaleCognome.getText());
+						pst.setString(3, tfGestionePersonaleTelefono.getText());
+						pst.setString(4, tfGestionePersonaleData.getText());
+						pst.execute();
+						JOptionPane.showMessageDialog(null, "Nuovo Personale inserito correttamente");
+						
+						resetFields();
+
+						pst.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					
+				}
+				else
+					JOptionPane.showMessageDialog(null, "i dati sono tutti obbligatori");
+			}
+		});
+		Image imgInserisciPersonale = new ImageIcon(this.getClass().getResource("/insertNewFattura.png")).getImage();
+		btnInserisciPersona.setIcon(new ImageIcon(imgInserisciPersonale));
+		btnInserisciPersona.setBounds(12, 310, 276, 20);
+		pnModificaPersonale.add(btnInserisciPersona);
+		
+		// btn elimina
+		btnEliminaPersonale = new JButton("Elimina");
+		btnEliminaPersonale.setEnabled(false);
+		btnEliminaPersonale.setBounds(12, 350, 276, 20);
 		Image imgEliminaPersonale = new ImageIcon(this.getClass().getResource("/eliminaDatiFattura.png")).getImage();
 		btnEliminaPersonale.setIcon(new ImageIcon(imgEliminaPersonale));
 		pnModificaPersonale.add(btnEliminaPersonale);
+		
 		
 		
 		leftPanel.add(pnModificaPersonale);
@@ -251,12 +330,15 @@ public class GestionePersonale extends JPanel {
 				model.addRow(row.toArray());
 			}
 			
+			table.setDefaultRenderer(Object.class, new AlphaTableRender());
 			table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 50));
 			table.getTableHeader().setBackground(new Color(240, 235, 135));
 			table.setRowHeight(25);
 			
 			pst.close();
 			rs.close();
+			
+			tableClickRow();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -274,6 +356,37 @@ public class GestionePersonale extends JPanel {
 	}
 	
 	/*
+	 * select row in table
+	 */
+	public void tableClickRow() {
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					int row = table.getSelectedRow();
+					String personaleID = (table.getModel().getValueAt(row, 0)).toString();
+					String query = "select * from Personale where PersonaleID='"+personaleID+"'";
+					PreparedStatement pst = connection.prepareStatement(query);
+					ResultSet rs = pst.executeQuery();
+					while(rs.next()) {
+						tfGestionePersonaleID.setText(rs.getString("PersonaleID").toString());
+						tfGestionePersonaleNome.setText(rs.getString("Nome").toString());
+						tfGestionePersonaleCognome.setText(rs.getString("Cognome").toString());
+						tfGestionePersonaleTelefono.setText(rs.getString("Telefono").toString());
+						tfGestionePersonaleData.setText(rs.getString("DataNascita").toString());
+					}
+					pst.close();
+					btnInserisciPersona.setEnabled(false);
+					btnModificaPersonale.setEnabled(true);
+					btnEliminaPersonale.setEnabled(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				} 
+			}
+		});
+	}
+	
+	/*
 	 * creazione colonne tabella
 	 */
 	private void setColumnsName() {
@@ -286,6 +399,45 @@ public class GestionePersonale extends JPanel {
 	}
 	
 	/*
+	 * search in DB next number Personale
+	 */
+	private int getNextNumber() {
+		int personaleID=0;
+		try {
+			String query = "select PersonaleID from Personale";
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next()) {
+				personaleID++;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} return personaleID+1;
+	}
+	
+	/*
+	 * reset campi inserimento Fattura
+	 */
+	private void resetFields() {
+		tfGestionePersonaleID.setText(String.valueOf(getNextNumber()));
+		tfGestionePersonaleNome.setText("");
+		tfGestionePersonaleCognome.setText("");
+		tfGestionePersonaleTelefono.setText("");
+		tfGestionePersonaleData.setText("");
+	}
+	
+	/*
+	 * controllo dati per inserimento
+	 * Fattura in DB
+	 */
+	private boolean controlloDati() {
+		if(tfGestionePersonaleNome.getText().equals("") || tfGestionePersonaleCognome.getText().equals("") || 
+				tfGestionePersonaleTelefono.getText().equals("") || tfGestionePersonaleData.getText().equals("") )
+			return false;
+		return true;
+	}
+	
+	/*
 	 * posizione IT per la data
 	 */
 	private Locale getLocale(String loc) {
@@ -294,5 +446,4 @@ public class GestionePersonale extends JPanel {
 		else
 			return Locale.ITALY;
 	}
-
 }
