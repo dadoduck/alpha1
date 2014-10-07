@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.TextField;
@@ -36,6 +37,8 @@ public class GestionePersonale extends JPanel {
 
 	Connection connection = null;
 	
+	private Image imgContainer;
+	
 	private JTable table;
 	private String[] strNameColumns;
 	
@@ -69,6 +72,8 @@ public class GestionePersonale extends JPanel {
 		
 		setLayout(new BorderLayout(0, 0));
 		
+		this.imgContainer = new ImageIcon("images/sfondoChiaro.jpg").getImage();
+		
 //	###	HEADER			#############################################################################################################
 		
 		headerPanel = new JPanel();
@@ -77,6 +82,7 @@ public class GestionePersonale extends JPanel {
 		lblVisualizzazioneEGestione.setFont(new Font("Purisa", Font.BOLD, 16));
 		headerPanel.add(lblVisualizzazioneEGestione);
 		headerPanel.setPreferredSize(new Dimension(headerPanel.getWidth(), 70));
+		headerPanel.setOpaque(false);
 		add(headerPanel, BorderLayout.PAGE_START);
 		
 		
@@ -84,6 +90,7 @@ public class GestionePersonale extends JPanel {
 		
 		leftPanel = new JPanel();
 		leftPanel.setLayout(null);
+		leftPanel.setOpaque(false);
 		
 		
 		// ********** pannello Gestione personale
@@ -310,6 +317,7 @@ public class GestionePersonale extends JPanel {
 		
 		rightPanel = new JPanel();
 		rightPanel.setLayout(null);
+		rightPanel.setOpaque(false);
 		rightPanel.setPreferredSize(new Dimension(20, 400));
 		add(rightPanel, BorderLayout.LINE_END);
 		
@@ -462,5 +470,9 @@ public class GestionePersonale extends JPanel {
 			return new Locale(loc);
 		else
 			return Locale.ITALY;
+	}
+	
+	public void paintComponent(Graphics g) {
+		g.drawImage(imgContainer, 0, 0, null);
 	}
 }

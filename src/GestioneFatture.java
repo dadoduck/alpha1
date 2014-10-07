@@ -3,6 +3,7 @@ import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.JLabel;
@@ -50,6 +51,8 @@ import javax.swing.SwingConstants;
 public class GestioneFatture extends JPanel {
 	
 	Connection connection = null;
+	
+	private Image imgContainer;
 	
 	private JTable table;
 	private JScrollPane scrollPane;
@@ -126,6 +129,8 @@ public class GestioneFatture extends JPanel {
 		
 		setLayout(new BorderLayout(0, 0));
 		
+		this.imgContainer = new ImageIcon("images/sfondoChiaro.jpg").getImage();
+		
 //	###	HEADER			#############################################################################################################
 		
 		headerPanel = new JPanel();
@@ -134,6 +139,7 @@ public class GestioneFatture extends JPanel {
 		lblVisualizzazioneEGestione.setFont(new Font("Purisa", Font.BOLD, 16));
 		headerPanel.add(lblVisualizzazioneEGestione);
 		headerPanel.setPreferredSize(new Dimension(headerPanel.getWidth(), 70));
+		headerPanel.setOpaque(false);
 		add(headerPanel, BorderLayout.PAGE_START);
 		
 		
@@ -142,6 +148,7 @@ public class GestioneFatture extends JPanel {
 		
 		leftPanel = new JPanel();
 		leftPanel.setLayout(null);
+		leftPanel.setOpaque(false);
 		
 		// ********** pannello Modifica fattura
 		
@@ -571,6 +578,7 @@ public class GestioneFatture extends JPanel {
 		
 		rightPanel = new JPanel();
 		rightPanel.setLayout(null);
+		rightPanel.setOpaque(false);
 		
 		// ********** pannello Checkbox fattura
 		
@@ -1263,6 +1271,10 @@ public class GestioneFatture extends JPanel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} return numeroFattura+1;
+	}
+	
+	public void paintComponent(Graphics g) {
+		g.drawImage(imgContainer, 0, 0, null);
 	}
 }
 

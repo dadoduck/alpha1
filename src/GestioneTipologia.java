@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -33,6 +34,8 @@ public class GestioneTipologia extends JPanel {
 
 	Connection connection = null;
 	
+	private Image imgContainer;
+	
 	private JTable table;
 	private String[] strNameColumns;
 	
@@ -59,8 +62,9 @@ public class GestioneTipologia extends JPanel {
 
 //		connessione al database
 		connection = sqliteConnection.dbConnector();
-		
 		setLayout(new BorderLayout(0, 0));
+		
+		this.imgContainer = new ImageIcon("images/sfondoChiaro.jpg").getImage();
 		
 //		###	HEADER			#############################################################################################################
 		
@@ -70,13 +74,14 @@ public class GestioneTipologia extends JPanel {
 		lblVisualizzazioneEGestione.setFont(new Font("Purisa", Font.BOLD, 16));
 		headerPanel.add(lblVisualizzazioneEGestione);
 		headerPanel.setPreferredSize(new Dimension(headerPanel.getWidth(), 70));
+		headerPanel.setOpaque(false);
 		add(headerPanel, BorderLayout.PAGE_START);
 		
 //		###	LEFT			#############################################################################################################
 		
 		leftPanel = new JPanel();
+		leftPanel.setOpaque(false);
 		leftPanel.setLayout(null);
-		
 		// ********** pannello Gestione tipologia
 	
 		pnModificaTipologia = new AlphaPanel("images/sfondo.jpg", "Gestione Tipologia", 30, 0, 300, 330);
@@ -245,6 +250,7 @@ public class GestioneTipologia extends JPanel {
 		rightPanel = new JPanel();
 		rightPanel.setLayout(null);
 		rightPanel.setPreferredSize(new Dimension(20, 400));
+		rightPanel.setOpaque(false);
 		add(rightPanel, BorderLayout.LINE_END);
 		
 	}
@@ -371,5 +377,9 @@ public class GestioneTipologia extends JPanel {
 		if(tfGestioneTipologiaTipo.getText().equals("") )
 			return false;
 		return true;
+	}
+	
+	public void paintComponent(Graphics g) {
+		g.drawImage(imgContainer, 0, 0, null);
 	}
 }
