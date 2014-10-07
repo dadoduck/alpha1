@@ -261,6 +261,23 @@ public class GestionePersonale extends JPanel {
 		
 		// btn elimina
 		btnEliminaPersonale = new JButton("Elimina");
+		btnEliminaPersonale.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int reply = JOptionPane.showConfirmDialog(null, "Confermi eliminazione?", "Attenzione!", JOptionPane.YES_NO_OPTION);
+		        if (reply == JOptionPane.YES_OPTION) {
+		        	try {
+						String query = "delete from Personale where PersonaleID='"+tfGestionePersonaleID.getText()+"'";
+						PreparedStatement pst = connection.prepareStatement(query);
+						pst.execute();
+						JOptionPane.showMessageDialog(null, "eliminazione avvenuta con successo");
+						pst.close();
+						printTable();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+		        }
+			}
+		});
 		btnEliminaPersonale.setEnabled(false);
 		btnEliminaPersonale.setBounds(12, 350, 276, 20);
 		Image imgEliminaPersonale = new ImageIcon(this.getClass().getResource("/eliminaDatiFattura.png")).getImage();
