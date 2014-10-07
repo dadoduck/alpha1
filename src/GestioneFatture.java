@@ -41,6 +41,7 @@ import javax.swing.JSlider;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.Printable;
 import java.awt.SystemColor;
 
 import javax.swing.SwingConstants;
@@ -492,6 +493,7 @@ public class GestioneFatture extends JPanel {
 						pst.execute();
 						JOptionPane.showMessageDialog(null, "Nuova Fattura inserita correttamente");
 						
+						printTable(orderByType, orderByNameColumn);
 						resetFieldsIns();
 
 						pst.close();

@@ -86,7 +86,7 @@ public class GestionePersonale extends JPanel {
 		leftPanel.setLayout(null);
 		
 		
-		// ********** pannello Modifica personale
+		// ********** pannello Gestione personale
 		
 		pnModificaPersonale = new AlphaPanel("images/sfondo.jpg", "Gestione Personale", 30, 0, 300, 390);
 		pnModificaPersonale.setBounds(30, 0, 300, 390);
@@ -242,6 +242,7 @@ public class GestionePersonale extends JPanel {
 						pst.execute();
 						JOptionPane.showMessageDialog(null, "Nuovo Personale inserito correttamente");
 						
+						printTable();
 						resetFields();
 
 						pst.close();
@@ -364,8 +365,7 @@ public class GestionePersonale extends JPanel {
 	}
 	
 	/*
-	 * crea la query in base 
-	 * agli elementi selezionati
+	 * crea la query 
 	 */
 	private String getQuery() {
 		String query = "select * from Personale";
