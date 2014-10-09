@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.awt.Color;
 
 import javax.swing.JButton;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
@@ -134,12 +135,17 @@ public class GestioneFatture extends JPanel {
 //	###	HEADER			#############################################################################################################
 		
 		headerPanel = new JPanel();
-		JLabel lblVisualizzazioneEGestione = new JLabel("Visualizzazione e gestione Fatture");
-		lblVisualizzazioneEGestione.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblVisualizzazioneEGestione.setFont(new Font("Purisa", Font.BOLD, 16));
-		headerPanel.add(lblVisualizzazioneEGestione);
+		
 		headerPanel.setPreferredSize(new Dimension(headerPanel.getWidth(), 70));
 		headerPanel.setOpaque(false);
+		
+		JLabel lblVisualizzazioneEGestione = new JLabel("Gestione Fatture");
+		lblVisualizzazioneEGestione.setForeground(Color.DARK_GRAY);
+		lblVisualizzazioneEGestione.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblVisualizzazioneEGestione.setFont(new Font("Ubuntu", Font.BOLD, 22));
+		lblVisualizzazioneEGestione.setBorder(new EmptyBorder(15, 0, 0, 0) );
+		headerPanel.add(lblVisualizzazioneEGestione);
+		
 		add(headerPanel, BorderLayout.PAGE_START);
 		
 		

@@ -34,6 +34,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+
+import javax.swing.JButton;
+
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.format.CellFormat;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 
 
 public class proveTable extends JPanel {
@@ -63,6 +73,7 @@ public class proveTable extends JPanel {
 	private double maxImporto = 0;
 	private int minSlider = 0;
 	private int maxSlider = 0;
+	private JButton btnExport;
 
 	
 	/**
@@ -235,6 +246,34 @@ public class proveTable extends JPanel {
 		lblTextValoreMassimoSlider = new JLabel("Importo massimo:");
 		lblTextValoreMassimoSlider.setBounds(612, 552, 215, 23);
 		add(lblTextValoreMassimoSlider);
+		
+		btnExport = new JButton("Export");
+		btnExport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					String filename = "/home/dado/Scrivania/file.xls";
+					
+					WritableWorkbook workbook = Workbook.createWorkbook(new File(filename));
+					WritableSheet sheet = workbook.createSheet("Tabella", 0);
+										
+					for(int i=0; i<table.getColumnCount(); i++) {
+						Label label = new Label(i, 0, table.getColumnName(i));
+						sheet.addCell(label);
+						for(int j=0; j<table.getRowCount(); j++) {
+							Label label1 = new Label(i, j+1, table.getValueAt(j, i).toString());
+							sheet.addCell(label1);
+						}
+					}
+					
+					workbook.write();
+					workbook.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		btnExport.setBounds(828, 490, 173, 25);
+		add(btnExport);
 		
 	}
 	

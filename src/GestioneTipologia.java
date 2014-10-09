@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import utility.AlphaPanel;
@@ -69,12 +70,17 @@ public class GestioneTipologia extends JPanel {
 //		###	HEADER			#############################################################################################################
 		
 		headerPanel = new JPanel();
-		JLabel lblVisualizzazioneEGestione = new JLabel("Visualizzazione e gestione delle Tipologie");
-		lblVisualizzazioneEGestione.setVerticalAlignment(SwingConstants.BOTTOM);
-		lblVisualizzazioneEGestione.setFont(new Font("Purisa", Font.BOLD, 16));
-		headerPanel.add(lblVisualizzazioneEGestione);
+		
 		headerPanel.setPreferredSize(new Dimension(headerPanel.getWidth(), 70));
 		headerPanel.setOpaque(false);
+		
+		JLabel lblVisualizzazioneEGestione = new JLabel("Gestione Tipologie");
+		lblVisualizzazioneEGestione.setForeground(Color.DARK_GRAY);
+		lblVisualizzazioneEGestione.setVerticalAlignment(SwingConstants.BOTTOM);
+		lblVisualizzazioneEGestione.setFont(new Font("Ubuntu", Font.BOLD, 22));
+		lblVisualizzazioneEGestione.setBorder(new EmptyBorder(15, 0, 0, 0) );
+		headerPanel.add(lblVisualizzazioneEGestione);
+		
 		add(headerPanel, BorderLayout.PAGE_START);
 		
 //		###	LEFT			#############################################################################################################
