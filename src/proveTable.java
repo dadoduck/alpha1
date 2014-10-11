@@ -43,6 +43,7 @@ import jxl.Cell;
 import jxl.CellView;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.format.Alignment;
 import jxl.format.CellFormat;
 import jxl.write.Label;
 import jxl.write.WritableCell;
@@ -260,25 +261,58 @@ public class proveTable extends JPanel {
 				try {
 					String filename = "/home/dado/Scrivania/Export.xls";
 					WritableWorkbook workbook = Workbook.createWorkbook(new File(filename));
-					WritableSheet sheet = workbook.createSheet("Tabella", 0);					
+					WritableSheet sheet = workbook.createSheet("Tabella", 0);
+					
+					// Colonne
 					for(int i=0; i<table.getColumnCount(); i++) {
-						WritableFont times16font = new WritableFont(WritableFont.TIMES, 18, WritableFont.BOLD, true); 
-						WritableCellFormat times16format = new WritableCellFormat (times16font);
-						Label label = new Label(i, 0, table.getColumnName(i), times16format);
+						
+						WritableFont fontHeader = new WritableFont(WritableFont.TIMES, 18, WritableFont.BOLD, true); 
+						WritableCellFormat formatHeader = new WritableCellFormat (fontHeader);
+						formatHeader.setAlignment(Alignment.CENTRE);
+						Label labelHeader = new Label(i, 0, table.getColumnName(i), formatHeader);
 						CellView cell=sheet.getColumnView(i);
 					    cell.setAutosize(true);
 					    sheet.setColumnView(i, cell);
+					    
 					    if (i==0) {
 					    	sheet.setRowView(0, 500);
-						}  
-						sheet.addCell(label);
-						for(int j=0; j<table.getRowCount(); j++) {
-							Label label1 = new Label(i, j+1, table.getValueAt(j, i).toString());
-							sheet.addCell(label1);
 						}
+					    
+						sheet.addCell(labelHeader);
+						
+						// Righe
+						for(int j=0; j<table.getRowCount()-1; j++) {
+							WritableCellFormat formatRow = new WritableCellFormat ();
+							if( (table.getColumnName(i).equals("NumeroFattura")) || 
+								(table.getColumnName(i).equals("DataFattura")) || 
+								(table.getColumnName(i).equals("Tipologia"))) {
+								formatRow.setAlignment(Alignment.CENTRE);
+							} else if( (table.getColumnName(i).equals("Importo")) ||  
+								(table.getColumnName(i).equals("ProvvigioniAcquisitore")) ||
+								(table.getColumnName(i).equals("ProvvigioniVenditore")) ) {
+								formatRow.setAlignment(Alignment.RIGHT);
+							}
+							Label labelRow = new Label(i, j+1, table.getValueAt(j, i).toString(), formatRow);
+							sheet.addCell(labelRow);
+						}
+						
+						// Ultima Riga
+						WritableFont fontTotal = new WritableFont(WritableFont.ARIAL, 12, WritableFont.BOLD, false); 
+						WritableCellFormat formatTotal = new WritableCellFormat (fontTotal);
+						if( (table.getColumnName(i).equals("NumeroFattura")) ) {
+							formatTotal.setAlignment(Alignment.CENTRE);
+						}
+						else {
+							formatTotal.setAlignment(Alignment.RIGHT);
+						}
+						Label labelTotal = new Label(i, table.getRowCount(), table.getValueAt(table.getRowCount()-1, i).toString(), formatTotal);
+						sheet.setRowView(table.getRowCount(), 350);
+						sheet.addCell(labelTotal);
 					}
+					
 					workbook.write();
 					workbook.close();
+					
 					JOptionPane.showMessageDialog(null, "Esportazione avvenuta con successo");
 				} catch (Exception e) {
 					e.printStackTrace();
