@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -38,10 +39,15 @@ import java.io.File;
 
 import javax.swing.JButton;
 
+import jxl.Cell;
+import jxl.CellView;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.format.CellFormat;
 import jxl.write.Label;
+import jxl.write.WritableCell;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
@@ -250,26 +256,35 @@ public class proveTable extends JPanel {
 		btnExport = new JButton("Export");
 		btnExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				try {
-					String filename = "/home/dado/Scrivania/file.xls";
-					
+					String filename = "/home/dado/Scrivania/Export.xls";
 					WritableWorkbook workbook = Workbook.createWorkbook(new File(filename));
-					WritableSheet sheet = workbook.createSheet("Tabella", 0);
-										
+					WritableSheet sheet = workbook.createSheet("Tabella", 0);					
 					for(int i=0; i<table.getColumnCount(); i++) {
-						Label label = new Label(i, 0, table.getColumnName(i));
+						WritableFont times16font = new WritableFont(WritableFont.TIMES, 18, WritableFont.BOLD, true); 
+						WritableCellFormat times16format = new WritableCellFormat (times16font);
+						Label label = new Label(i, 0, table.getColumnName(i), times16format);
+						CellView cell=sheet.getColumnView(i);
+					    cell.setAutosize(true);
+					    sheet.setColumnView(i, cell);
+					    if (i==0) {
+					    	sheet.setRowView(0, 500);
+						}  
 						sheet.addCell(label);
 						for(int j=0; j<table.getRowCount(); j++) {
 							Label label1 = new Label(i, j+1, table.getValueAt(j, i).toString());
 							sheet.addCell(label1);
 						}
 					}
-					
 					workbook.write();
 					workbook.close();
+					JOptionPane.showMessageDialog(null, "Esportazione avvenuta con successo");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				
 			}
 		});
 		btnExport.setBounds(828, 490, 173, 25);
