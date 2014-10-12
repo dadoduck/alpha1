@@ -45,8 +45,18 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.print.Printable;
 import java.awt.SystemColor;
+import java.io.File;
 
 import javax.swing.SwingConstants;
+
+import jxl.CellView;
+import jxl.Workbook;
+import jxl.format.Alignment;
+import jxl.write.Label;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 
 
 public class GestioneFatture extends JPanel {
@@ -119,6 +129,7 @@ public class GestioneFatture extends JPanel {
 //	valori ordinamento table by click Header
 	private int orderByType=0;
 	private String orderByNameColumn="";
+	private JButton btnExportResult;
 	
 	/**
 	 * Create the panel.
@@ -596,6 +607,7 @@ public class GestioneFatture extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				pnCheckboxFattura.setSize(300, 40);
 				pnSearchForImportFattura.setBounds(20, pnCheckboxFattura.getHeight() + 20, 300, pnSearchForImportFattura.getHeight());
+				btnExportResult.setBounds(20, pnCheckboxFattura.getHeight() + pnSearchForImportFattura.getHeight() + 40, 300, 30);
 				rightPanel.revalidate();
 				rightPanel.repaint();
 			}
@@ -608,6 +620,7 @@ public class GestioneFatture extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				pnCheckboxFattura.setSize(300, 260);
 				pnSearchForImportFattura.setBounds(20, pnCheckboxFattura.getHeight() + 20, 300, pnSearchForImportFattura.getHeight());
+				btnExportResult.setBounds(20, pnCheckboxFattura.getHeight() + pnSearchForImportFattura.getHeight() + 40, 300, 30);
 				rightPanel.revalidate();
 				rightPanel.repaint();
 			}
@@ -731,17 +744,19 @@ public class GestioneFatture extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pnSearchForImportFattura.setSize(300, 40);
+				btnExportResult.setBounds(20, pnCheckboxFattura.getHeight() + pnSearchForImportFattura.getHeight() + 40, 300, 30);
 				pnSearchForImportFattura.revalidate();
 				pnSearchForImportFattura.repaint();
 			}
 		};
 		pnSearchForImportFattura.setBtnCollapseMinus(pnSearchForImportFatturaLisMinus);
 		
-		// button collapse Minus pnInsertFattura 
+		// button collapse Plus pnInsertFattura 
 		ActionListener pnSearchForImportFatturaLisPlus = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pnSearchForImportFattura.setSize(300, 245);
+				btnExportResult.setBounds(20, pnCheckboxFattura.getHeight() + pnSearchForImportFattura.getHeight() + 40, 300, 30);
 				pnSearchForImportFattura.revalidate();
 				pnSearchForImportFattura.repaint();
 			}
@@ -805,9 +820,25 @@ public class GestioneFatture extends JPanel {
 			}
 		});
 		
+		// ********** button esporta risultati ricerca
+
+		btnExportResult = new JButton("Esporta Ricerca");
+		btnExportResult.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ExportTableXLS();
+			}
+		});
+		btnExportResult.setFont(new Font("Dialog", Font.BOLD, 14));
+		btnExportResult.setForeground(SystemColor.controlLtHighlight);
+		btnExportResult.setBackground(Color.DARK_GRAY);
+		btnExportResult.setBounds(20, 545, 300, 40);
+		Image imgExportResult = new ImageIcon(this.getClass().getResource("/btnExportResult.png")).getImage();
+		btnExportResult.setIcon(new ImageIcon(imgExportResult));
+		rightPanel.add(btnExportResult);
+		
 		rightPanel.add(pnSearchForImportFattura);
 		
-		// Dimensione Right Panele & Collapse
+		// Dimensione Right Panel & Collapse
 		rightPanel.setPreferredSize(new Dimension(350, 400));
 		add(rightPanel, BorderLayout.LINE_END);
 		
@@ -818,6 +849,7 @@ public class GestioneFatture extends JPanel {
 					rightPanel.setPreferredSize(new Dimension(30, 400));
 					pnSearchForImportFattura.setVisible(false);
 					pnCheckboxFattura.setVisible(false);
+					btnExportResult.setVisible(false);
 					btnCollapseRightPanel.setBounds(12, 0, 18, 120);
 					closedRightPanel = true;
 					Image imgCollapseRight = new ImageIcon(this.getClass().getResource("/collapseRightPanelOpen.png")).getImage();
@@ -826,6 +858,7 @@ public class GestioneFatture extends JPanel {
 					rightPanel.setPreferredSize(new Dimension(350, 400));
 					pnSearchForImportFattura.setVisible(true);
 					pnCheckboxFattura.setVisible(true);
+					btnExportResult.setVisible(true);
 					btnCollapseRightPanel.setBounds(332, 0, 18, 120);
 					Image imgCollapseRight = new ImageIcon(this.getClass().getResource("/collapseRightPanelClosed.png")).getImage();
 					btnCollapseRightPanel.setIcon(new ImageIcon(imgCollapseRight));
@@ -839,6 +872,8 @@ public class GestioneFatture extends JPanel {
 		Image imgCollapseRight = new ImageIcon(this.getClass().getResource("/collapseRightPanelClosed.png")).getImage();
 		btnCollapseRightPanel.setIcon(new ImageIcon(imgCollapseRight));
 		rightPanel.add(btnCollapseRightPanel);
+		
+		
 		
 	}
 	
@@ -1279,6 +1314,75 @@ public class GestioneFatture extends JPanel {
 		} return numeroFattura+1;
 	}
 	
+	/*
+	 * Esportazione risultati tabella
+	 */
+	private void ExportTableXLS() {
+		try {
+			String filename = "/home/dado/Scrivania/Export.xls";
+			WritableWorkbook workbook = Workbook.createWorkbook(new File(filename));
+			WritableSheet sheet = workbook.createSheet("Tabella", 0);
+			
+			// Colonne
+			for(int i=0; i<table.getColumnCount(); i++) {
+				
+				WritableFont fontHeader = new WritableFont(WritableFont.TIMES, 18, WritableFont.BOLD, true); 
+				WritableCellFormat formatHeader = new WritableCellFormat (fontHeader);
+				formatHeader.setAlignment(Alignment.CENTRE);
+				Label labelHeader = new Label(i, 0, table.getColumnName(i), formatHeader);
+				CellView cell=sheet.getColumnView(i);
+			    cell.setAutosize(true);
+			    sheet.setColumnView(i, cell);
+			    
+			    if (i==0) {
+			    	sheet.setRowView(0, 500);
+				}
+			    
+				sheet.addCell(labelHeader);
+				
+				// Righe
+				for(int j=0; j<table.getRowCount()-1; j++) {
+					WritableCellFormat formatRow = new WritableCellFormat ();
+					if( (table.getColumnName(i).equals("NumeroFattura")) || 
+						(table.getColumnName(i).equals("DataFattura")) || 
+						(table.getColumnName(i).equals("Tipologia"))) {
+						formatRow.setAlignment(Alignment.CENTRE);
+					} else if( (table.getColumnName(i).equals("Importo")) ||  
+						(table.getColumnName(i).equals("ProvvigioniAcquisitore")) ||
+						(table.getColumnName(i).equals("ProvvigioniVenditore")) ) {
+						formatRow.setAlignment(Alignment.RIGHT);
+					}
+					Label labelRow = new Label(i, j+1, table.getValueAt(j, i).toString(), formatRow);
+					sheet.addCell(labelRow);
+				}
+				
+				// Ultima Riga
+				WritableFont fontTotal = new WritableFont(WritableFont.ARIAL, 12, WritableFont.BOLD, false); 
+				WritableCellFormat formatTotal = new WritableCellFormat (fontTotal);
+				if( (table.getColumnName(i).equals("NumeroFattura")) ) {
+					formatTotal.setAlignment(Alignment.CENTRE);
+				}
+				else {
+					formatTotal.setAlignment(Alignment.RIGHT);
+				}
+				Label labelTotal = new Label(i, table.getRowCount(), table.getValueAt(table.getRowCount()-1, i).toString(), formatTotal);
+				sheet.setRowView(table.getRowCount(), 350);
+				sheet.addCell(labelTotal);
+			}
+			
+			workbook.write();
+			workbook.close();
+			
+			JOptionPane.showMessageDialog(null, "Esportazione avvenuta con successo");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+	 */
 	public void paintComponent(Graphics g) {
 		g.drawImage(imgContainer, 0, 0, null);
 	}
